@@ -115,7 +115,6 @@
 			children = (
 				0307AA3220E0E50C00AAA5B1 /* Model */,
 				0307AA3020E0E4BA00AAA5B1 /* PYAttributedHandler.swift */,
-				0307AA3320E0E52000AAA5B1 /* PYCoreTextImageModel.swift */,
 				03E097E020E4DFA1001EE7CF /* PYDataHandler.swift */,
 				03E097CD20E331E8001EE7CF /* PYFrameHander.swift */,
 				03E097CB20E33049001EE7CF /* PYTextView.swift */,
@@ -129,6 +128,7 @@
 		0307AA3220E0E50C00AAA5B1 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				0307AA3320E0E52000AAA5B1 /* PYCoreTextImageModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";

@@ -108,7 +108,7 @@ class PYFrameHander: NSObject {
             width = layout?.minWidth ?? 0
         }
         maxHeight_private = maxHeight <= 0 ? CGFloat.leastNonzeroMagnitude : maxHeight
-        width_private = width//layout?.width ?? 0
+//        width_private = layout?.maxwidth ?? 0
         
         insets_private = layout?.insets ?? .zero
         let leftX = insets_private.left
@@ -121,7 +121,7 @@ class PYFrameHander: NSObject {
         topY_private = bottomY
         bottomY_private = topY
         
-        attributedSize_private = CGSize.init(width: width_private, height: maxHeight_private)
+        attributedSize_private = CGSize.init(width: width_private + leftX - rightX, height: maxHeight_private + insets_private.bottom + topY)
     }
     @discardableResult
     private func reLoadData() -> CTFrame? {

@@ -90,7 +90,7 @@ class PYDataHandler: NSObject {
         attributedHandelr.underlineColor = nil
         attributedHandelr.shadowColor = nil
         attributedHandelr.strikethroughColor = nil
-        attributedHandelr.text = "0"
+        attributedHandelr.text = "o"
         
         let attri = attributedHandelr.createMutableAttributedStringIfExsitStr()
         let range = NSRange.init(location: 0, length: attri?.length ?? 0)
