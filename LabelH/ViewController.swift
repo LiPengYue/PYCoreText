@@ -10,9 +10,21 @@ import UIKit
 import SnapKit
 
 class ViewController: UIViewController,PYDataHandlerDelegate {
-    func getAttributedHandler() -> (PYAttributedHandler) {
-        return attributeHandler
+    
+    func createTextModel(model: Any) -> PYCoreTextStringBaseModel {
+        let textModel = PYCoreTextStringBaseModel.init()
+        
+        let hanle = PYAttributedHandler.init()
+        if let model = model as? TextModel {
+            hanle.foregroundColor = model.textColor
+            hanle.text = model.str
+        }
+       
+        textModel.attributeHandler = hanle
+        return textModel
     }
+    
+  
     func completed(attribute: NSMutableAttributedString, imageModelArray: [PYCoreTextImageBaseModel]) {
         let inset = UIEdgeInsets.zero//UIEdgeInsets.init(top: 50, left: 10, bottom: 80, right: 0)
         let layout = PYFrameHander.Layout.init(//minHeight:view.frame.height,
@@ -30,7 +42,7 @@ class ViewController: UIViewController,PYDataHandlerDelegate {
     
     func createImageModel(model: Any) -> PYCoreTextImageBaseModel {
         
-        guard let model = model as? Model else {
+        guard let model = model as? ImageModel else {
             return PYCoreTextImageBaseModel()
         }
         
@@ -141,28 +153,32 @@ class ViewController: UIViewController,PYDataHandlerDelegate {
     }
   
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        str += "号"
-        let insert = UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0)
-        let layout = PYFrameHander.Layout.init(//minHeight: view.frame.height,
-                                               maxHeight: 400,
-                                               //minWidth: view.frame.width,
-                                               maxWidth: view.frame.width,
-                                               insets: insert,//UIEdgeInsets.zero,
-                                               maxStringLenth: nil)
-        let frame = PYFrameHander.init(string: strAttributed, layout: layout)
-        textView.isAutoLayoutSize = true
-        textView.textFrame = frame
+//        str += "号"
+//        let insert = UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0)
+//        let layout = PYFrameHander.Layout.init(//minHeight: view.frame.height,
+//                                               maxHeight: 400,
+//                                               //minWidth: view.frame.width,
+//                                               maxWidth: view.frame.width,
+//                                               insets: insert,//UIEdgeInsets.zero,
+//                                               maxStringLenth: nil)
+//        let frame = PYFrameHander.init(string: strAttributed, layout: layout)
+//        textView.isAutoLayoutSize = true
+//        textView.textFrame = frame
 //        textView.frame = CGRect.init(origin: CGPoint.init(x: 10, y: 50), size: frame.attributedMaxSize)
         
         
-//        let model1 = Model.init()
-//        let model2 = Model.init()
-//        let modelArray = [
-//            model1//,model2,model1,model2,model1,model2,model1,model2
-//        ]
-//        PYDataHandler.handlerData(modelArray: modelArray, datagate: self) { (model) -> (PYDataHandler.ModelType) in
-//            return .image
-//        }
+        let model1 = ImageModel.init()
+        let model2 = TextModel.init()
+        let modelArray = [
+            model2,
+            model1,
+            model2
+        ]
+        PYDataHandler.handlerData(modelArray: modelArray, datagate: self) { (model) -> (PYDataHandler.ModelType) in
+            if model is TextModel { return .text }
+            if model is ImageModel { return .image }
+            return .text
+        }
     }
     
     

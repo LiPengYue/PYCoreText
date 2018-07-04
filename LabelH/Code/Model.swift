@@ -8,7 +8,7 @@
 
 import UIKit
 
-class Model: NSObject {
+class ImageModel: NSObject {
     var url: String? = "timg.jpeg"
     var bounds: CGSize? = CGSize.init(width: 100, height: 200)
 }

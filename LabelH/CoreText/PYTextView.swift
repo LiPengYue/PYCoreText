@@ -140,7 +140,7 @@ private extension PYTextView {
                 let delegateBounds = runBounds.offsetBy(dx: colRect.origin.x,
                                                         dy: colRect.origin.y)
                 
-                imageModel.frame = delegateBounds
+                imageModel.setValue(delegateBounds, forKey: "frame_private")
                 let imageName = imageModel.url ?? ""
                 let image = UIImage.init(named: imageName)
                 context.draw(image!.cgImage!, in: imageModel.frame)
