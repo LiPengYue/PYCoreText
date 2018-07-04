@@ -14,7 +14,9 @@ import UIKit
 
 class PYCoreTextImageBaseModel: NSObject {
     var url: String?
-    var frame: CGRect { return frame_private}
+    var frame: CGRect {
+        return framePrivate?.cgRectValue ?? .zero
+    }
    
     /// CTRun顶线距基线的距离
     var ascent: CGFloat = 100
@@ -25,11 +27,8 @@ class PYCoreTextImageBaseModel: NSObject {
 
     
     // MARK: - private
-    private var frame_private: CGRect = .zero
-    
     /// 设置字符串
     var attributeHandler: PYAttributedHandler?
     override init() { super.init() }
-    private var framePrivate = CGRect.zero
-    
+    @objc var framePrivate: NSValue?
 }

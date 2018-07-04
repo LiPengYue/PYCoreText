@@ -139,8 +139,9 @@ private extension PYTextView {
                 // 算在此区域中空白字符的位置
                 let delegateBounds = runBounds.offsetBy(dx: colRect.origin.x,
                                                         dy: colRect.origin.y)
-                
-                imageModel.setValue(delegateBounds, forKey: "frame_private")
+                let ns = Bundle.main.infoDictionary!["CFBundleExecutable"] as! String
+                let delegateBoundsValue = NSValue.init(cgRect: delegateBounds)
+                imageModel.setValue(delegateBoundsValue, forKey: "frame_private")
                 let imageName = imageModel.url ?? ""
                 let image = UIImage.init(named: imageName)
                 context.draw(image!.cgImage!, in: imageModel.frame)
