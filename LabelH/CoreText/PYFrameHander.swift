@@ -22,11 +22,8 @@ class PYFrameHander: NSObject {
     }
     
     //MARK: - open
-    var isAutoSize: Bool = true {
-        didSet {
-            
-        }
-    }
+    private var isAutoHeight: Bool = true
+    private var isAutoWeight: Bool = false
     
     //MARK: open proprty
     /// 最左侧的位置
@@ -95,12 +92,20 @@ class PYFrameHander: NSObject {
         reLoadData()
     }
     private func setProperty(size: CGSize) {
-        let textViewW = size.width
-        let height = size.height
-        var maxHeight: CGFloat = layout?.maxHeight ?? 0
-        if (isAutoSize || maxHeight <= 0) && (height > 0) { maxHeight = height }
-//        let minH = layout?.minHeight ?? 0
-//        if (minH > 0) && (minH > maxHeight) { maxHeight = minH }
+        attributedSize_private = size
+        
+        let textVieSize = textView?.bounds.size ?? .zero
+        var textViewW = textVieSize.width
+        var height = textVieSize.height
+        
+        if isAutoWeight || (textViewW == 0 && height == 0) {
+            attributedSize_private.width = textViewW
+            textViewW = size.width
+        }
+        if isAutoHeight {
+            height = size.height
+        }
+        var maxHeight: CGFloat = height///layout?.maxHeight ?? 0
         maxHeight = abs(maxHeight)
         
         maxHeight_private = maxHeight <= 0 ? CGFloat.leastNonzeroMagnitude : maxHeight
@@ -125,7 +130,7 @@ class PYFrameHander: NSObject {
         topY_private = topY
         bottomY_private = bottomY
 
-        attributedSize_private = CGSize.init(width: midWidth + leftX, height: maxHeight_private + insets_private.bottom + topY)
+//        attributedSize_private = CGSize.init(width: midWidth + leftX, height: maxHeight_private + insets_private.bottom + topY)
     }
     @discardableResult
     private func reLoadData() -> CTFrame? {
@@ -142,6 +147,7 @@ class PYFrameHander: NSObject {
                                        height: CGFloat.greatestFiniteMagnitude)
         
         let size =  CTFramesetterSuggestFrameSizeWithConstraints(ctFramesetter,range,nil,standardSize,nil)
+        
         let path = createNewPath(size: size)
   
         let cfRange = CFRange.init(location: 0, length: 0)
@@ -173,7 +179,7 @@ class PYFrameHander: NSObject {
         let bottomY_path = layoutBottom//textViewH - maxHeight_private - layoutTop + bottomMargin
         
         let path = CGMutablePath.init()
-        path.move(to: CGPoint.init(x: leftX, y:   bottomY_path))
+        path.move(to: CGPoint.init(x: leftX, y: bottomY_path))
         path.addLine(to: CGPoint.init(x: rightX, y: bottomY_path))
         path.addLine(to: CGPoint.init(x: rightX, y: topY_path))
         path.addLine(to: CGPoint.init(x: leftX, y: topY_path))

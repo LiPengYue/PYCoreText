@@ -23,7 +23,7 @@
 		03E097CC20E33049001EE7CF /* PYTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E097CB20E33049001EE7CF /* PYTextView.swift */; };
 		03E097CE20E331E8001EE7CF /* PYFrameHander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E097CD20E331E8001EE7CF /* PYFrameHander.swift */; };
 		03E097E120E4DFA1001EE7CF /* PYDataHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E097E020E4DFA1001EE7CF /* PYDataHandler.swift */; };
-		03E097E420E4FCAC001EE7CF /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E097E320E4FCAC001EE7CF /* Model.swift */; };
+		03E097E420E4FCAC001EE7CF /* ImageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E097E320E4FCAC001EE7CF /* ImageModel.swift */; };
 		03E097E620E4FD6B001EE7CF /* timg.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 03E097E520E4FD6B001EE7CF /* timg.jpeg */; };
 		03E097EC20EA126C001EE7CF /* PYCoreTextTemp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E097EB20EA126C001EE7CF /* PYCoreTextTemp.swift */; };
 		18420BCE48FCD6480A29E55F /* Pods_LabelH.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EEDAE00BCD315A5F6D8EA99 /* Pods_LabelH.framework */; };
@@ -72,7 +72,7 @@
 		03E097CB20E33049001EE7CF /* PYTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PYTextView.swift; sourceTree = "<group>"; };
 		03E097CD20E331E8001EE7CF /* PYFrameHander.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PYFrameHander.swift; sourceTree = "<group>"; };
 		03E097E020E4DFA1001EE7CF /* PYDataHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PYDataHandler.swift; sourceTree = "<group>"; };
-		03E097E320E4FCAC001EE7CF /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		03E097E320E4FCAC001EE7CF /* ImageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageModel.swift; sourceTree = "<group>"; };
 		03E097E520E4FD6B001EE7CF /* timg.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = timg.jpeg; sourceTree = "<group>"; };
 		03E097EB20EA126C001EE7CF /* PYCoreTextTemp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PYCoreTextTemp.swift; sourceTree = "<group>"; };
 		22D632AFE6D245E0EC01FDD9 /* Pods-LabelHTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LabelHTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-LabelHTests/Pods-LabelHTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -198,7 +198,7 @@
 			isa = PBXGroup;
 			children = (
 				03E097E520E4FD6B001EE7CF /* timg.jpeg */,
-				03E097E320E4FCAC001EE7CF /* Model.swift */,
+				03E097E320E4FCAC001EE7CF /* ImageModel.swift */,
 				03CADB9920EBA5AB009E8B2F /* TextModel.swift */,
 			);
 			path = Code;
@@ -445,7 +445,7 @@
 				032C0C7C20D3BC09007CCE44 /* AppDelegate.swift in Sources */,
 				03E097CE20E331E8001EE7CF /* PYFrameHander.swift in Sources */,
 				03CADB9820EB9A76009E8B2F /* PYCoreTextStringBaseModel.swift in Sources */,
-				03E097E420E4FCAC001EE7CF /* Model.swift in Sources */,
+				03E097E420E4FCAC001EE7CF /* ImageModel.swift in Sources */,
 				03E097E120E4DFA1001EE7CF /* PYDataHandler.swift in Sources */,
 				0307AA3120E0E4BA00AAA5B1 /* PYAttributedHandler.swift in Sources */,
 				03E097CC20E33049001EE7CF /* PYTextView.swift in Sources */,

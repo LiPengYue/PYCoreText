@@ -55,8 +55,11 @@ class ViewController: UIViewController,PYDataHandlerDelegate {
         textView.textFrame = pyFrame
         let size = CGSize.init(width: pyFrame.attributedMaxSize.width, height: pyFrame.attributedMaxSize.height)
 //        textView.frame = CGRect.init(origin: CGPoint.init(x: 0, y: 0), size: size)
+//        pyFrame.isAutoHeight = true
+//        pyFrame.isAutoWeight = true
         textView.snp.updateConstraints { (make) in
-            make.height.equalTo(size.height)
+//            make.height.equalTo(size.height)
+//            make.width.equalTo(size.width)
         }
     }
   
@@ -154,8 +157,9 @@ class ViewController: UIViewController,PYDataHandlerDelegate {
         textView.isAutoLayoutSize = true
         view.addSubview(textView)
         textView.snp.makeConstraints { (make) in
-            make.height.equalTo(23)
-            make.top.left.right.equalTo(view)
+            make.height.equalTo(view.frame.height)
+            make.top.equalTo(view)
+            make.width.equalTo(view.frame.width)
         }
     }
   
@@ -177,18 +181,17 @@ class ViewController: UIViewController,PYDataHandlerDelegate {
         let model1 = ImageModel.init()
         let model2 = TextModel.init()
         let modelArray = [
+//            model2,
+            model1,
+            model1,
             model2,
             model1,
-//            model1,
-//            model1,
-//            model2,
-//            model1,
-//            model2,
-//            model1,
-//            model1,
-//            model1,
-//            model1,
-//            model1
+            model2,
+            model1,
+            model1,
+            model1,
+            model1,
+            model1
         ]
         PYDataHandler.handlerData(modelArray: modelArray, datagate: self) { (model) -> (PYDataHandler.ModelType) in
             if model is TextModel { return .text }
