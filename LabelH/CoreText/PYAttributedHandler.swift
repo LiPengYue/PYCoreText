@@ -17,6 +17,11 @@ class PYAttributedHandler: NSObject,NSCopying {
         var name: String = ""
         var size: CGFloat = 0
         var affineTransform: CGAffineTransform? = nil
+        init(name: String? = nil, size: CGFloat, affineTransform: CGAffineTransform? = nil) {
+            self.name = name ?? "PingFangSC-Regular"
+            self.size = size
+            self.affineTransform = affineTransform
+        }
     }
     
     func py_copy() -> PYAttributedHandler { return self.copy() as! PYAttributedHandler }

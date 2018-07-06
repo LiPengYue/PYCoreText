@@ -35,6 +35,7 @@ class PYTextView: UIView {
     var isAutoLayoutSize: Bool = false
     var textFrame: PYFrameHander? {
         didSet {
+            textFrame?.reloadProperty(textView: self)
             setNeedsDisplay()
         }
     }
@@ -112,10 +113,8 @@ private extension PYTextView {
         let path = CTFrameGetPath(ctFrame)
         let colRect = path.boundingBoxOfPath
         
+        var imageIdex: NSInteger = 0
         for index in 0 ..< ctLinesCount {
-            if index >= imageModelArray.count { return }
-            
-            let imageModel = imageModelArray[index]
             
             let lineUnsafePoint = CFArrayGetValueAtIndex(ctLines, index)
             /// line
@@ -129,7 +128,8 @@ private extension PYTextView {
                 let run = unsafeBitCast(runUnsafePointer, to: CTRun.self)
                 /// 是否为图片站位图
                 if !isImageRun(run: run) { continue }
-                
+                let imageModel = imageModelArray[imageIdex]
+                imageIdex += 1
                 let charIndex = CTRunGetStringRange(run)
                 let offsetX = CTLineGetOffsetForStringIndex(line, charIndex.location, nil)
                 
@@ -139,12 +139,13 @@ private extension PYTextView {
                 // 算在此区域中空白字符的位置
                 let delegateBounds = runBounds.offsetBy(dx: colRect.origin.x,
                                                         dy: colRect.origin.y)
-                let ns = Bundle.main.infoDictionary!["CFBundleExecutable"] as! String
-                let delegateBoundsValue = NSValue.init(cgRect: delegateBounds)
-                imageModel.setValue(delegateBoundsValue, forKey: "frame_private")
+                
+//                let delegateBoundsValue = NSValue.init(cgRect: delegateBounds)
+//                imageModel.setValue(delegateBoundsValue, forKey: "frame_private")
+                imageModel.framePrivate = delegateBounds
                 let imageName = imageModel.url ?? ""
                 let image = UIImage.init(named: imageName)
-                context.draw(image!.cgImage!, in: imageModel.frame)
+                context.draw(image!.cgImage!, in: delegateBounds)
             }
         }
     }

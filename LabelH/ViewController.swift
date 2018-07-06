@@ -14,30 +14,15 @@ class ViewController: UIViewController,PYDataHandlerDelegate {
     func createTextModel(model: Any) -> PYCoreTextStringBaseModel {
         let textModel = PYCoreTextStringBaseModel.init()
         
-        let hanle = PYAttributedHandler.init()
+        let hanle = self.attributeHandler.py_copy()
         if let model = model as? TextModel {
             hanle.foregroundColor = model.textColor
             hanle.text = model.str
+            hanle.font = PYAttributedHandler.Font(size: 42)
         }
        
         textModel.attributeHandler = hanle
         return textModel
-    }
-    
-  
-    func completed(attribute: NSMutableAttributedString, imageModelArray: [PYCoreTextImageBaseModel]) {
-        let inset = UIEdgeInsets.zero//UIEdgeInsets.init(top: 50, left: 10, bottom: 80, right: 0)
-        let layout = PYFrameHander.Layout.init(//minHeight:view.frame.height,
-                                               maxHeight: view.frame.height,
-                                               maxWidth: view.frame.width,
-                                               insets: inset,
-                                               maxStringLenth: nil)
-        let pyFrame = PYFrameHander.init(string: attribute, layout: layout)
-        textView.imageModelArray = imageModelArray
-//        textView.attributedString = attribute
-        let size = CGSize.init(width: 400, height: pyFrame.attributedMaxSize.height)
-        textView.textFrame = pyFrame
-//        textView.frame = CGRect.init(origin: CGPoint.init(x: 0, y: 0), size: size)
     }
     
     func createImageModel(model: Any) -> PYCoreTextImageBaseModel {
@@ -50,8 +35,31 @@ class ViewController: UIViewController,PYDataHandlerDelegate {
         imageModel.ascent = model.bounds?.height ?? 0
         imageModel.width = model.bounds?.width ?? 0
         imageModel.url = model.url ?? ""
+        imageModel.attributeHandler = self.attributeHandler.py_copy()
         return imageModel
     }
+  
+    func completed(attribute: NSMutableAttributedString, imageModelArray: [PYCoreTextImageBaseModel]) {
+        let inset = UIEdgeInsets.init(top: 0,
+                                      left: 0,
+                                      bottom: 0, 
+                                      right: 0)
+        let layout = PYFrameHander.Layout.init(//minHeight:view.frame.height,
+                                               maxHeight: view.frame.height,
+                                               maxWidth: view.frame.width,
+                                               insets: inset,
+                                               maxStringLenth: nil)
+        let pyFrame = PYFrameHander.init(string: attribute, layout: layout)
+        textView.imageModelArray = imageModelArray
+//        textView.attributedString = attribute
+        textView.textFrame = pyFrame
+        let size = CGSize.init(width: pyFrame.attributedMaxSize.width, height: pyFrame.attributedMaxSize.height)
+//        textView.frame = CGRect.init(origin: CGPoint.init(x: 0, y: 0), size: size)
+        textView.snp.updateConstraints { (make) in
+            make.height.equalTo(size.height)
+        }
+    }
+  
   
     
     let label = UILabel()
@@ -93,7 +101,7 @@ class ViewController: UIViewController,PYDataHandlerDelegate {
         handler.strikethroughStyle = PYAttributedHandler.LineStyle.single
         handler.strikethroughColor = #colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)
         handler.baselineOffset = 0
-        handler.verticalForms = true
+//        handler.verticalForms = true
         return handler
     }
     var strAttributed: NSMutableAttributedString {
@@ -117,17 +125,17 @@ class ViewController: UIViewController,PYDataHandlerDelegate {
 //            style.tailIndent = 3
 
             handler.paragraphStyle = style
-//            handler.strokeWidth = 3
-//            handler.strokeColor = #colorLiteral(red: 0.1019607857, green: 0.2784313858, blue: 0.400000006, alpha: 1)
-//            handler.superscript = 3
-//            handler.underlineColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
-//            handler.underlineStyle = PYAttributedHandler.LineStyle.single
-//            handler.underlineStyleModifiers = PYAttributedHandler.LineStyleModifiers.patternDot
-//            handler.textBackgroundColor = #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)
-//            handler.strikethroughStyle = PYAttributedHandler.LineStyle.single
-//            handler.strikethroughColor = #colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)
-//            handler.baselineOffset = 0
-//            handler.verticalForms = true
+            handler.strokeWidth = 3
+            handler.strokeColor = #colorLiteral(red: 0.1019607857, green: 0.2784313858, blue: 0.400000006, alpha: 1)
+            handler.superscript = 3
+            handler.underlineColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+            handler.underlineStyle = PYAttributedHandler.LineStyle.single
+            handler.underlineStyleModifiers = PYAttributedHandler.LineStyleModifiers.patternDot
+            handler.textBackgroundColor = #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)
+            handler.strikethroughStyle = PYAttributedHandler.LineStyle.single
+            handler.strikethroughColor = #colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)
+            handler.baselineOffset = 0
+            handler.verticalForms = true
             return handler.createMutableAttributedStringIfExsitStr()!
         }
     }
@@ -143,13 +151,12 @@ class ViewController: UIViewController,PYDataHandlerDelegate {
 //        textView.frame = CGRect.init(x: 0, y: 20, width: 400, height: 300)
         textView.frame = view.bounds
         textView.backgroundColor = #colorLiteral(red: 0.4745098054, green: 0.8392156959, blue: 0.9764705896, alpha: 1)
-//        let insets = UIEdgeInsets.init(top: 110, left: 40, bottom: 30, right: 40)
-//        let frame = PYFrameHander.init(string: strAttributed)
         textView.isAutoLayoutSize = true
-//        textView.textMaxSize = CGSize.init(width: 300, height: CGFloat.greatestFiniteMagnitude)
-//        textView.textFrame = frame
         view.addSubview(textView)
-//        textView.frame = CGRect.init(origin: CGPoint.zero, size: frame.attributedMaxSize)
+        textView.snp.makeConstraints { (make) in
+            make.height.equalTo(23)
+            make.top.left.right.equalTo(view)
+        }
     }
   
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -172,7 +179,16 @@ class ViewController: UIViewController,PYDataHandlerDelegate {
         let modelArray = [
             model2,
             model1,
-            model2
+//            model1,
+//            model1,
+//            model2,
+//            model1,
+//            model2,
+//            model1,
+//            model1,
+//            model1,
+//            model1,
+//            model1
         ]
         PYDataHandler.handlerData(modelArray: modelArray, datagate: self) { (model) -> (PYDataHandler.ModelType) in
             if model is TextModel { return .text }

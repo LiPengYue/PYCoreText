@@ -82,8 +82,9 @@ class PYDataHandler: NSObject {
     private class func handleText<T>(model: T, textDelegate: PYDataHandlerDelegate) -> NSMutableAttributedString {
         
         let textModel = textDelegate.createTextModel(model: model)
+        
         let handler = textModel.attributeHandler
-        handler?.text = textModel.string
+//        handler?.text = textModel.string ?? textModel.
         let attri = handler?.createMutableAttributedStringIfExsitStr()
         return attri ?? NSMutableAttributedString(string: "")
     }

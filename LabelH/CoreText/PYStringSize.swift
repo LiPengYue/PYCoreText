@@ -12,6 +12,7 @@ extension UILabel {
     enum GetSizeType_ENUM: Int {
         case text = 0
         case attributeString
+        
     }
     
     ///  自动计算了label 的宽度，在此之前，需要有label的宽度约束

@@ -52,7 +52,7 @@ class PYFrameHander: NSObject {
     
     /// 最大string size
     var  attributedMaxSize: CGSize { return getAttributedSize_private() }
-    
+    var attributedMaxH: CGFloat { return getAttributedSize_private().height }
     weak var textView: PYTextView? { return textView_private }
     
     // MARK: open func
@@ -95,43 +95,49 @@ class PYFrameHander: NSObject {
         reLoadData()
     }
     private func setProperty(size: CGSize) {
-        
+        let textViewW = size.width
         let height = size.height
         var maxHeight: CGFloat = layout?.maxHeight ?? 0
         if (isAutoSize || maxHeight <= 0) && (height > 0) { maxHeight = height }
-        let minH = layout?.minHeight ?? 0
-        if (minH > 0) && (minH > maxHeight) { maxHeight = minH }
+//        let minH = layout?.minHeight ?? 0
+//        if (minH > 0) && (minH > maxHeight) { maxHeight = minH }
         maxHeight = abs(maxHeight)
         
-        var width = size.width
-        if (width < layout?.minWidth ?? 0) {
-            width = layout?.minWidth ?? 0
-        }
         maxHeight_private = maxHeight <= 0 ? CGFloat.leastNonzeroMagnitude : maxHeight
-//        width_private = layout?.maxwidth ?? 0
         
         insets_private = layout?.insets ?? .zero
         let leftX = insets_private.left
-        let rightX = leftX + width_private + insets_private.right
+        let rightX = textViewW - insets_private.right
         let topY = insets_private.top
-        let bottomY = topY + maxHeight_private + insets_private.bottom
+//        let bottomY = topY + maxHeight_private + insets_private.bottom
+         let bottomY = topY + maxHeight_private + insets_private.bottom
+        var width = size.width
+//        if (width < (layout?.minWidth ?? 0)) {
+//            width = layout?.minWidth ?? 0
+//        }
         
+        let midWidth = rightX - leftX
+        width = width < midWidth ? width : midWidth
+        
+        width_private = width
         leftX_private = leftX
         rightX_private = rightX
-        topY_private = bottomY
-        bottomY_private = topY
-        
-        attributedSize_private = CGSize.init(width: width_private + leftX - rightX, height: maxHeight_private + insets_private.bottom + topY)
+        topY_private = topY
+        bottomY_private = bottomY
+
+        attributedSize_private = CGSize.init(width: midWidth + leftX, height: maxHeight_private + insets_private.bottom + topY)
     }
     @discardableResult
     private func reLoadData() -> CTFrame? {
         
         guard let attributedString = attributedString_private else{ return nil }
         
+        guard let textView = textView else { return nil}
+        
         let ctFramesetter = CTFramesetterCreateWithAttributedString(attributedString)
         let range = CFRange.init(location: 0,length: 0)
         
-        width_private = layout?.maxWidth ?? 0
+        width_private = textView.frame.width// ?? 0
         let standardSize = CGSize.init(width: width_private,
                                        height: CGFloat.greatestFiniteMagnitude)
         
