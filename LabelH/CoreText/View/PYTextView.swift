@@ -47,7 +47,10 @@ class PYTextView: UIView {
     // MARK: - func
     
     // MARK: network
-    
+    func reloadData(textFrame: PYFrameHander,imageModelArray: [PYCoreTextImageBaseModel]) {
+        self.imageModelArray = imageModelArray
+        self.textFrame = textFrame
+    }
     // MARK: handle views
     
     ///设置

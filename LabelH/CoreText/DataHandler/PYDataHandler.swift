@@ -12,6 +12,16 @@ import UIKit
 ///https://www.jianshu.com/p/e52a38e60e7c
 let k_PYCoreTextImage =  "k_PYCoreTextImageIsImagePosition"
 
+protocol PYDataHandlerCompleteDelegate {
+    /// 数据处理完成
+    ///
+    /// - Parameters:
+    ///   - attribute: attributedString
+    ///   - imageModelArray: imageModelArray
+    func completed(attribute: NSMutableAttributedString,
+                   imageModelArray: [PYCoreTextImageBaseModel])
+}
+
 @objc protocol PYDataHandlerDelegate {
     
     /// 创建string 中的image 模型
@@ -27,49 +37,91 @@ let k_PYCoreTextImage =  "k_PYCoreTextImageIsImagePosition"
     /// - Returns: 返回数据模型
     func createTextModel(model:Any) -> PYCoreTextStringBaseModel
     
-    /// 数据处理完成
+    
+    /// 创建LinkModel
     ///
-    /// - Parameters:
-    ///   - attribute: attributedString
-    ///   - imageModelArray: imageModelArray
-    func completed(attribute: NSMutableAttributedString,
-                   imageModelArray: [PYCoreTextImageBaseModel])
+    /// - Parameter model: 网络模型
+    /// - Returns: 返回数据模型
+    func createLinkModel(model:Any) -> PYCoreLinkBaseModel
 }
 
 
 class PYDataHandler: NSObject {
     
-    /// 数据的处理
+    /// 数据的处理 block 回调
     ///
     /// - Parameters:
     ///   - modelArray: 数据集合
     ///   - imageDatagate:
     ///   - currentModelType: 需要返回对应的类型
     class func handlerData<T>(modelArray:[T],
-                              datagate: PYDataHandlerDelegate,
-                              _ currentModelType:((_ currentModel: T) -> (ModelType))) {
+                              handlerDataDelegate: PYDataHandlerDelegate,
+                              completCallBack: ((_ attribute: NSMutableAttributedString,
+        _ imageModelArray: [PYCoreTextImageBaseModel])->())?,
+                              _ currentModelType:@escaping ((_ currentModel: T) -> (ModelType?))) {
+        handlerModelArray(modelArray: modelArray, handlerDataDelegate: handlerDataDelegate,{ (data) -> (PYDataHandler.ModelType?) in
+            return currentModelType(data)
+        }) { (string, imageModelArray) in
+            completCallBack?(string,imageModelArray)
+        }
+        
+    }
+    
+    /// 数据的处理 delegate 回调
+    ///
+    /// - Parameters:
+    ///   - modelArray: 数据集合
+    ///   - imageDatagate:
+    ///   - currentModelType: 需要返回对应的类型
+    class func handlerData<T>(modelArray:[T],
+                              handlerDataDelegate: PYDataHandlerDelegate,
+                              _ completDelegate:PYDataHandlerCompleteDelegate? = nil,
+                              _ currentModelType:@escaping ((_ currentModel: T) -> (ModelType?))) {
+        
+        //            DispatchQueue.main.async {
+        handlerModelArray(modelArray: modelArray, handlerDataDelegate: handlerDataDelegate,{ (data) -> (PYDataHandler.ModelType?) in
+            return currentModelType(data)
+        }) { (string, imageModelArray) in
+            completDelegate?.completed(attribute: string,
+                                       imageModelArray: imageModelArray)
+        }
+        //            }
+        //        }
+    }
+    
+    private class func handlerModelArray<T>(modelArray:[T],
+                                            handlerDataDelegate: PYDataHandlerDelegate,
+                                            _ currentModelType:@escaping ((_ currentModel: T) -> (ModelType?)),
+                                            _ complete:((_ str: NSMutableAttributedString, _ imageModelArray:[PYCoreTextImageBaseModel])->())?){
         
         let attributedStringM = NSMutableAttributedString()
         var imageBaseModeArrayM = [PYCoreTextImageBaseModel]()
-        
+            
+        //        DispatchQueue.global().async {
         for model in modelArray {
-            let type = currentModelType(model)
-            switch type {
-            case .image:
-                let result = self.handlerImageData(model: model,
-                                                   imageDelegate: datagate)
-                attributedStringM.append(result.0)
-                imageBaseModeArrayM.append(result.1)
-            case .link:
-                break
-            case .text:
-               let attribted = handleText(model: model,
-                           textDelegate: datagate)
-               attributedStringM.append(attribted)
+            RunLoopManager.defult.addTask {
+                let type = currentModelType(model)
+                switch type {
+                case .image?:
+                    let result = handlerImageData(model: model,
+                                                  imageDelegate: handlerDataDelegate)
+                    attributedStringM.append(result.0)
+                    imageBaseModeArrayM.append(result.1)
+                case .link?:
+                    let result = handleLink(model: model, textDelegate: handlerDataDelegate)
+                    attributedStringM.append(result)
+                case .text?:
+                    let attribted = handleText(model: model,
+                                               textDelegate: handlerDataDelegate)
+                    attributedStringM.append(attribted)
+                default: break
+                }
             }
         }
-        datagate.completed(attribute: attributedStringM,
-                           imageModelArray: imageBaseModeArrayM)
+        RunLoopManager.defult.completeFunc {
+            complete?(attributedStringM,imageBaseModeArrayM)
+        }
+    
     }
     
     
@@ -84,7 +136,14 @@ class PYDataHandler: NSObject {
         let textModel = textDelegate.createTextModel(model: model)
         
         let handler = textModel.attributeHandler
-//        handler?.text = textModel.string ?? textModel.
+        //        handler?.text = textModel.string ?? textModel.
+        let attri = handler?.createMutableAttributedStringIfExsitStr()
+        return attri ?? NSMutableAttributedString(string: "")
+    }
+    
+    private class func handleLink<T>(model: T, textDelegate: PYDataHandlerDelegate) -> NSMutableAttributedString {
+        let linkModel = textDelegate.createLinkModel(model: model)
+        let handler = linkModel.attributeHandler
         let attri = handler?.createMutableAttributedStringIfExsitStr()
         return attri ?? NSMutableAttributedString(string: "")
     }
@@ -121,7 +180,6 @@ class PYDataHandler: NSObject {
         }) { (pointer) -> CGFloat in
             let imageModel = pointer.assumingMemoryBound(to: RunStruct.self)
             return imageModel.pointee.width
-            
         }
         
         let runDelegate = CTRunDelegateCreate(&imageCallback,
@@ -144,8 +202,6 @@ class PYDataHandler: NSObject {
         
         var attri: NSMutableAttributedString?
         if let attributedHandelr = attributedHandler {
-            
-//            attributedHandelr = attributedHandelr.py_copy()
             attributedHandelr.textBackgroundColor = nil
             attributedHandelr.foregroundColor = .clear
             attributedHandelr.strokeColor = nil

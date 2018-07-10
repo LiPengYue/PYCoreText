@@ -9,59 +9,8 @@
 import UIKit
 import SnapKit
 
-class ViewController: UIViewController,PYDataHandlerDelegate {
-    
-    func createTextModel(model: Any) -> PYCoreTextStringBaseModel {
-        let textModel = PYCoreTextStringBaseModel.init()
-        
-        let hanle = self.attributeHandler.py_copy()
-        if let model = model as? TextModel {
-            hanle.foregroundColor = model.textColor
-            hanle.text = model.str
-            hanle.font = PYAttributedHandler.Font(size: 42)
-        }
-       
-        textModel.attributeHandler = hanle
-        return textModel
-    }
-    
-    func createImageModel(model: Any) -> PYCoreTextImageBaseModel {
-        
-        guard let model = model as? ImageModel else {
-            return PYCoreTextImageBaseModel()
-        }
-        
-        let imageModel = PYCoreTextImageBaseModel.init()
-        imageModel.ascent = model.bounds?.height ?? 0
-        imageModel.width = model.bounds?.width ?? 0
-        imageModel.url = model.url ?? ""
-        imageModel.attributeHandler = self.attributeHandler.py_copy()
-        return imageModel
-    }
-  
-    func completed(attribute: NSMutableAttributedString, imageModelArray: [PYCoreTextImageBaseModel]) {
-        let inset = UIEdgeInsets.init(top: 0,
-                                      left: 0,
-                                      bottom: 0, 
-                                      right: 0)
-        let layout = PYFrameHander.Layout.init(//minHeight:view.frame.height,
-                                               maxHeight: view.frame.height,
-                                               maxWidth: view.frame.width,
-                                               insets: inset,
-                                               maxStringLenth: nil)
-        let pyFrame = PYFrameHander.init(string: attribute, layout: layout)
-        textView.imageModelArray = imageModelArray
-//        textView.attributedString = attribute
-        textView.textFrame = pyFrame
-        let size = CGSize.init(width: pyFrame.attributedMaxSize.width, height: pyFrame.attributedMaxSize.height)
-//        textView.frame = CGRect.init(origin: CGPoint.init(x: 0, y: 0), size: size)
-//        pyFrame.isAutoHeight = true
-//        pyFrame.isAutoWeight = true
-        textView.snp.updateConstraints { (make) in
-//            make.height.equalTo(size.height)
-//            make.width.equalTo(size.width)
-        }
-    }
+class ViewController: UIViewController,PYDataHandlerDelegate,PYCoreTextTableViewProtocol {
+ 
   
   
     
@@ -107,51 +56,54 @@ class ViewController: UIViewController,PYDataHandlerDelegate {
 //        handler.verticalForms = true
         return handler
     }
-    var strAttributed: NSMutableAttributedString {
-        get {
-            let handler = PYAttributedHandler.init()
-            handler.font = PYAttributedHandler.Font(name: "PingFangSC-Regular", size: 30, affineTransform: nil)
-            handler.text = str
-//            handler.characterSpacing = 0
-//            handler.ligature = 0
-//            handler.foregroundColor = #colorLiteral(red: 0.9568627477, green: 0.6588235497, blue: 0.5450980663, alpha: 1)
-//            handler.foregroundColorFromContext = true
-            
-            let style = NSMutableParagraphStyle()
-            style.alignment = .center
-//            style.firstLineHeadIndent = 1
-//            style.headIndent = 1
-//            style.lineHeightMultiple = 1
-            style.maximumLineHeight = 100
-            style.minimumLineHeight = 10
-            style.lineSpacing = 10
-//            style.tailIndent = 3
-
-            handler.paragraphStyle = style
-            handler.strokeWidth = 3
-            handler.strokeColor = #colorLiteral(red: 0.1019607857, green: 0.2784313858, blue: 0.400000006, alpha: 1)
-            handler.superscript = 3
-            handler.underlineColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
-            handler.underlineStyle = PYAttributedHandler.LineStyle.single
-            handler.underlineStyleModifiers = PYAttributedHandler.LineStyleModifiers.patternDot
-            handler.textBackgroundColor = #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)
-            handler.strikethroughStyle = PYAttributedHandler.LineStyle.single
-            handler.strikethroughColor = #colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)
-            handler.baselineOffset = 0
-            handler.verticalForms = true
-            return handler.createMutableAttributedStringIfExsitStr()!
-        }
-    }
     override func viewDidLoad() {
         super.viewDidLoad()
-        coreText()
-//        let tempView = PYCoreTextTemp()
-//        tempView.frame = view.bounds
-//        view.addSubview(tempView)
+//        coreText()
+        
+       setupTableView()
     }
-
+    
+    private func setupTableView() {
+        view.addSubview(tableView)
+        tableView.coreTextTableViewProtocol = self
+        tableView.handlerDataDelegate = self
+        
+        let button = UIButton()
+        button.addTarget(self, action: #selector(clickButton), for: UIControlEvents.touchUpInside)
+        view.addSubview(button)
+        button.backgroundColor = UIColor.blue
+        button.setTitle("button", for: UIControlState.normal)
+        button.snp.makeConstraints { (make) in
+            make.left.top.right.equalTo(view)
+            make.height.equalTo(200)
+        }
+        
+        tableView.snp.makeConstraints { (make) in
+            make.left.bottom.right.equalTo(view)
+            make.top.equalTo(button.snp.bottom)
+        }
+    }
+    
+    @objc private func clickButton() {
+        let model1 = ImageModel.init()
+        let model2 = TextModel.init()
+        var modelArray2 = [Any]()
+        for _ in 0 ..< 6 {
+            modelArray2.append(model1)
+            modelArray2.append(model2)
+        }
+        tableView.modelArray = modelArray2
+    }
+    
+    
+    // MARK: - tableView
+    lazy var tableView: PYCoreTextTableView = {
+       let tableView = PYCoreTextTableView.init(frame: CGRect.zero, style: UITableViewStyle.plain)
+        return tableView
+    }()
+    
     func coreText() {
-//        textView.frame = CGRect.init(x: 0, y: 20, width: 400, height: 300)
+
         textView.frame = view.bounds
         textView.backgroundColor = #colorLiteral(red: 0.4745098054, green: 0.8392156959, blue: 0.9764705896, alpha: 1)
         textView.isAutoLayoutSize = true
@@ -164,41 +116,93 @@ class ViewController: UIViewController,PYDataHandlerDelegate {
     }
   
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        str += "号"
-//        let insert = UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0)
-//        let layout = PYFrameHander.Layout.init(//minHeight: view.frame.height,
-//                                               maxHeight: 400,
-//                                               //minWidth: view.frame.width,
-//                                               maxWidth: view.frame.width,
-//                                               insets: insert,//UIEdgeInsets.zero,
-//                                               maxStringLenth: nil)
-//        let frame = PYFrameHander.init(string: strAttributed, layout: layout)
-//        textView.isAutoLayoutSize = true
-//        textView.textFrame = frame
-//        textView.frame = CGRect.init(origin: CGPoint.init(x: 10, y: 50), size: frame.attributedMaxSize)
-        
-        
         let model1 = ImageModel.init()
         let model2 = TextModel.init()
-        let modelArray = [
-//            model2,
-            model1,
-            model1,
-            model2,
-            model1,
-            model2,
-            model1,
-            model1,
-            model1,
-            model1,
-            model1
-        ]
-        PYDataHandler.handlerData(modelArray: modelArray, datagate: self) { (model) -> (PYDataHandler.ModelType) in
-            if model is TextModel { return .text }
-            if model is ImageModel { return .image }
-            return .text
+        var modelArray2 = [Any]()
+        for _ in 0 ..< 111 {
+            modelArray2.append(model1)
+            modelArray2.append(model2)
         }
+//        PYDataHandler.handlerData(modelArray: modelArray2, delegate: self) { (model) -> (PYDataHandler.ModelType) in
+//            if model is TextModel { return .text }
+//            if model is ImageModel { return .image }
+//            return .text
+//        }
+    }
+}
+
+
+//MARK: - PYDataHandler delegate
+extension ViewController {
+    
+    
+    func createLinkModel(model: Any) -> PYCoreLinkBaseModel {
+        return PYCoreLinkBaseModel()
     }
     
+    func createTextModel(model: Any) -> PYCoreTextStringBaseModel {
+        let textModel = PYCoreTextStringBaseModel.init()
+        
+        let hanle = self.attributeHandler.py_copy()
+        if let model = model as? TextModel {
+            hanle.foregroundColor = model.textColor
+            hanle.text = model.str
+            hanle.font = PYAttributedHandler.Font(size: 42)
+        }
+        
+        textModel.attributeHandler = hanle
+        return textModel
+    }
+    
+    func createImageModel(model: Any) -> PYCoreTextImageBaseModel {
+        
+        guard let model = model as? ImageModel else {
+            return PYCoreTextImageBaseModel()
+        }
+        
+        let imageModel = PYCoreTextImageBaseModel.init()
+        imageModel.ascent = model.bounds?.height ?? 0
+        imageModel.width = model.bounds?.width ?? 0
+        imageModel.url = model.url ?? ""
+        imageModel.attributeHandler = self.attributeHandler.py_copy()
+        return imageModel
+    }
+    
+    func completed(attribute: NSMutableAttributedString, imageModelArray: [PYCoreTextImageBaseModel]) {
+        let inset = UIEdgeInsets.init(top: 0,
+                                      left: 0,
+                                      bottom: 0,
+                                      right: 0)
+        let layout = PYFrameHander.Layout.init(//minHeight:view.frame.height,
+            maxHeight: view.frame.height,
+            maxWidth: view.frame.width,
+            insets: inset,
+            maxStringLenth: nil)
+        let pyFrame = PYFrameHander.init(string: attribute, layout: layout)
+        
+        
+//        textView.imageModelArray = imageModelArray
+        //        textView.attributedString = attribute
+//        textView.textFrame = pyFrame
+//        let size = CGSize.init(width: pyFrame.attributedMaxSize.width, height: pyFrame.attributedMaxSize.height)
+        //        textView.frame = CGRect.init(origin: CGPoint.init(x: 0, y: 0), size: size)
+        //        pyFrame.isAutoHeight = true
+        //        pyFrame.isAutoWeight = true
+//        textView.snp.updateConstraints { (make) in
+//            //            make.height.equalTo(size.height)
+//            //            make.width.equalTo(size.width)
+//        }
+    }
     
 }
+
+
+//MARK: - TextView delegate
+extension ViewController {
+    func getModelType(model: Any) -> PYDataHandler.ModelType {
+        if model is TextModel { return .text }
+        if model is ImageModel { return .image }
+        return .text
+    }
+}
+
