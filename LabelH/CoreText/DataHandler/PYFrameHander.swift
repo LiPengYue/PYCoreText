@@ -48,9 +48,21 @@ class PYFrameHander: NSObject {
     var layout: Layout? { return textLayout }
     
     /// 最大string size
-    var  attributedMaxSize: CGSize { return getAttributedSize_private() }
+    var attributedMaxSize: CGSize { return getAttributedSize_private() }
     var attributedMaxH: CGFloat { return getAttributedSize_private().height }
+    var attributedString: NSAttributedString? { return attributedString_private }
     weak var textView: PYTextView? { return textView_private }
+    
+    
+    /// 获取attributedString的高度
+    ///
+    /// - Parameters:
+    ///   - attributedString: 默认为self.attributeString
+    ///   - W: 参考 宽度
+    /// - Returns: attributedString 的高度
+    func getAttributedHeight(attributedString: NSAttributedString? = nil ,W: CGFloat) -> CGFloat? {
+        return getAttributedHeight_private(attributedString: attributedString, W: W)
+    }
     
     // MARK: open func
     /// 更新数据 
@@ -60,10 +72,6 @@ class PYFrameHander: NSObject {
         reLoadData()
     }
     
-   
-    
-    
-    // -------------------------------------------------
     // MARK: - private
     // MARK: private proprty
     private var textLayout: Layout? { didSet { setTextLayout() } }
@@ -80,9 +88,7 @@ class PYFrameHander: NSObject {
     private var cgPath_private: CGMutablePath?
     private var ctFrame_private: CTFrame?
     private var attributedSize_private: CGSize = CGSize.zero
-    
     private weak var textView_private: PYTextView?
-    
     
     //MARK: private func
     /// 创建 ctFrame 并更新self.ctFrame 与self.cgPath
@@ -197,6 +203,23 @@ class PYFrameHander: NSObject {
     }
     private func getAttributedSize_private() -> CGSize {
         return attributedSize_private 
+    }
+    private func getAttributedHeight_private(attributedString: NSAttributedString? = nil ,W: CGFloat) -> CGFloat? {
+        
+        guard let string =  attributedString ?? attributedString_private else{ return nil}
+        
+        let standardSize = CGSize.init(width: W,
+                                       height: CGFloat.greatestFiniteMagnitude)
+        
+        let ctFramesetter = CTFramesetterCreateWithAttributedString(string)
+        let range = CFRange.init(location: 0,length: 0)
+        
+        let size =  CTFramesetterSuggestFrameSizeWithConstraints(ctFramesetter,
+                                                                 range,
+                                                                 nil,
+                                                                 standardSize,
+                                                                 nil)
+        return size.height
     }
     deinit {
         print("✅")

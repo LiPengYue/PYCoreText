@@ -10,5 +10,5 @@ import UIKit
 
 class ImageModel: NSObject {
     var url: String? = "timg.jpeg"
-    var bounds: CGSize? = CGSize.init(width: 100, height: 200)
+    var bounds: CGSize? = CGSize.init(width: 103.4 * 4, height: 100.0 * 4)
 }

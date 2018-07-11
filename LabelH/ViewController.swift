@@ -9,7 +9,7 @@
 import UIKit
 import SnapKit
 
-class ViewController: UIViewController,PYDataHandlerDelegate,PYCoreTextTableViewProtocol {
+class ViewController: UIViewController,PYDataHandlerDelegate,PYCoreTextTableViewDelegate {
  
   
   
@@ -65,7 +65,7 @@ class ViewController: UIViewController,PYDataHandlerDelegate,PYCoreTextTableView
     
     private func setupTableView() {
         view.addSubview(tableView)
-        tableView.coreTextTableViewProtocol = self
+        tableView.coreTextTableViewDelegate = self as! PYCoreTextTableViewDelegate
         tableView.handlerDataDelegate = self
         
         let button = UIButton()
@@ -87,8 +87,13 @@ class ViewController: UIViewController,PYDataHandlerDelegate,PYCoreTextTableView
     @objc private func clickButton() {
         let model1 = ImageModel.init()
         let model2 = TextModel.init()
+        var modelArray1 = [Any]()
         var modelArray2 = [Any]()
-        for _ in 0 ..< 6 {
+        for _ in 0 ..< 12 {
+            modelArray1.append(model1)
+            modelArray1.append(model2)
+        }
+        for _ in 0 ..< 5 {
             modelArray2.append(model1)
             modelArray2.append(model2)
         }
@@ -119,7 +124,7 @@ class ViewController: UIViewController,PYDataHandlerDelegate,PYCoreTextTableView
         let model1 = ImageModel.init()
         let model2 = TextModel.init()
         var modelArray2 = [Any]()
-        for _ in 0 ..< 111 {
+        for _ in 0 ..< 11 {
             modelArray2.append(model1)
             modelArray2.append(model2)
         }

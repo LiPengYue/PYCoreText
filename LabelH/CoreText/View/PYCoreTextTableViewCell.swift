@@ -9,9 +9,7 @@
 import UIKit
 
 class PYCoreTextTableViewCell: UITableViewCell {
- 
-    
-    
+
     // MARK: - init
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -25,20 +23,16 @@ class PYCoreTextTableViewCell: UITableViewCell {
     
     
     // MARK: - properties
-    func reloadData(textFrame: PYFrameHander,imageModelArray: [PYCoreTextImageBaseModel]) {
+    func reloadData(cellHeight: CGFloat? = -1, textFrame: PYFrameHander?,imageModelArray: [PYCoreTextImageBaseModel]?) {
+        var h = cellHeight ?? -1
+        h = h <= 0 ? (textFrame?.getAttributedHeight(W: self.frame.width) ?? 0) : h
+        updateTextViewHeight(height: h)
         self.textFrame = textFrame
-        coreTextView.imageModelArray = imageModelArray
+        self.imageModelArray = imageModelArray
+        coreTextView.reloadData(textFrame: textFrame, imageModelArray: imageModelArray)
     }
-    var textFrame: PYFrameHander? {
-        didSet{
-            if let textFrame = textFrame {
-                coreTextView.textFrame = textFrame
-                let height = textFrame.attributedMaxSize.height
-                updateTextViewHeight(height: height)
-            }
-        }
-    }
-    
+    var imageModelArray: [PYCoreTextImageBaseModel]?
+    var textFrame: PYFrameHander?
     
     // MARK: - func
     // MARK: handle views
@@ -73,7 +67,11 @@ class PYCoreTextTableViewCell: UITableViewCell {
                                             attribute: .bottom,
                                             multiplier: 1,
                                             constant: 0)
-
+        top.isActive = true
+        bottom.isActive = true
+        left.isActive = true
+        right.isActive = true
+        
         coreTextView.addConstraints([heightConstraints])
         contentView.addConstraints([top,left,right,bottom])
     }
@@ -97,6 +95,7 @@ class PYCoreTextTableViewCell: UITableViewCell {
                                              attribute: .notAnAttribute,
                                              multiplier: 1,
                                              constant: height)
+        height.isActive = true
         return height
     }
     // MARK: handle event

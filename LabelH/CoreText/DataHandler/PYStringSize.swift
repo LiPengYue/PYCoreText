@@ -130,9 +130,6 @@ extension NSAttributedString {
             totalHeight += ascent + descent + leading
             maxWidth = maxWidth > lineW ? maxWidth : lineW
             
-            
-            
-            
 //            let runs = CTLineGetGlyphRuns(ctLine)
 //            let runsCount = CFArrayGetCount(runs)
 //

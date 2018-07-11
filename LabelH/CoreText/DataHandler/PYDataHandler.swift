@@ -59,7 +59,7 @@ class PYDataHandler: NSObject {
                               completCallBack: ((_ attribute: NSMutableAttributedString,
         _ imageModelArray: [PYCoreTextImageBaseModel])->())?,
                               _ currentModelType:@escaping ((_ currentModel: T) -> (ModelType?))) {
-        handlerModelArray(modelArray: modelArray, handlerDataDelegate: handlerDataDelegate,{ (data) -> (PYDataHandler.ModelType?) in
+        handlerModelArray(modelArray: modelArray,handlerDataDelegate: handlerDataDelegate,{ (data) -> (PYDataHandler.ModelType?) in
             return currentModelType(data)
         }) { (string, imageModelArray) in
             completCallBack?(string,imageModelArray)
@@ -78,15 +78,12 @@ class PYDataHandler: NSObject {
                               _ completDelegate:PYDataHandlerCompleteDelegate? = nil,
                               _ currentModelType:@escaping ((_ currentModel: T) -> (ModelType?))) {
         
-        //            DispatchQueue.main.async {
         handlerModelArray(modelArray: modelArray, handlerDataDelegate: handlerDataDelegate,{ (data) -> (PYDataHandler.ModelType?) in
             return currentModelType(data)
         }) { (string, imageModelArray) in
             completDelegate?.completed(attribute: string,
                                        imageModelArray: imageModelArray)
         }
-        //            }
-        //        }
     }
     
     private class func handlerModelArray<T>(modelArray:[T],
@@ -97,7 +94,6 @@ class PYDataHandler: NSObject {
         let attributedStringM = NSMutableAttributedString()
         var imageBaseModeArrayM = [PYCoreTextImageBaseModel]()
             
-        //        DispatchQueue.global().async {
         for model in modelArray {
             RunLoopManager.defult.addTask {
                 let type = currentModelType(model)

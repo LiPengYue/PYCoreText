@@ -18,6 +18,7 @@
 		032C0C8620D3BC0A007CCE44 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 032C0C8420D3BC0A007CCE44 /* LaunchScreen.storyboard */; };
 		032C0C9120D3BC0A007CCE44 /* LabelHTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032C0C9020D3BC0A007CCE44 /* LabelHTests.swift */; };
 		032C0C9C20D3BC0A007CCE44 /* LabelHUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032C0C9B20D3BC0A007CCE44 /* LabelHUITests.swift */; };
+		033E938C20F61ED300616DDE /* UIImage+zip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033E938B20F61ED300616DDE /* UIImage+zip.swift */; };
 		03C5D5B020F37ED100E53131 /* PYCoreLinkBaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5D5AF20F37ED100E53131 /* PYCoreLinkBaseModel.swift */; };
 		03C5D5B220F3857300E53131 /* RunLoopManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5D5B120F3857300E53131 /* RunLoopManager.swift */; };
 		03C5D5B720F4A0B100E53131 /* PYCoreTextTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5D5B620F4A0B100E53131 /* PYCoreTextTableView.swift */; };
@@ -71,6 +72,7 @@
 		032C0C9720D3BC0A007CCE44 /* LabelHUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LabelHUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		032C0C9B20D3BC0A007CCE44 /* LabelHUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelHUITests.swift; sourceTree = "<group>"; };
 		032C0C9D20D3BC0A007CCE44 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		033E938B20F61ED300616DDE /* UIImage+zip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+zip.swift"; sourceTree = "<group>"; };
 		03745EBE20DCD98E00AADC51 /* LabelH-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "LabelH-Bridging-Header.h"; sourceTree = "<group>"; };
 		03C5D5AF20F37ED100E53131 /* PYCoreLinkBaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PYCoreLinkBaseModel.swift; sourceTree = "<group>"; };
 		03C5D5B120F3857300E53131 /* RunLoopManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunLoopManager.swift; sourceTree = "<group>"; };
@@ -131,6 +133,7 @@
 				03C5D5B320F4A05000E53131 /* View */,
 				0307AA3220E0E50C00AAA5B1 /* Model */,
 				03E097EB20EA126C001EE7CF /* PYCoreTextTemp.swift */,
+				033E938B20F61ED300616DDE /* UIImage+zip.swift */,
 			);
 			path = CoreText;
 			sourceTree = "<group>";
@@ -479,6 +482,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				03C5D5B020F37ED100E53131 /* PYCoreLinkBaseModel.swift in Sources */,
+				033E938C20F61ED300616DDE /* UIImage+zip.swift in Sources */,
 				03C5D5B920F4A12E00E53131 /* PYCoreTextTableViewCell.swift in Sources */,
 				0307AA3620E0E84700AAA5B1 /* PYCTParagraphStyle.swift in Sources */,
 				0307AA2E20E0E3C400AAA5B1 /* PYStringSize.swift in Sources */,

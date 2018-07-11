@@ -9,6 +9,6 @@
 import UIKit
 
 class TextModel: NSObject {
-    var str = "哈哈哈哈哈"
+    var str = "\n哈哈哈哈哈哈哈哈哈哈\n"
     var textColor = #colorLiteral(red: 0.9568627477, green: 0.6588235497, blue: 0.5450980663, alpha: 1)
 }

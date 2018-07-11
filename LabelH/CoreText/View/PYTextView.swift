@@ -47,7 +47,7 @@ class PYTextView: UIView {
     // MARK: - func
     
     // MARK: network
-    func reloadData(textFrame: PYFrameHander,imageModelArray: [PYCoreTextImageBaseModel]) {
+    func reloadData(textFrame: PYFrameHander?,imageModelArray: [PYCoreTextImageBaseModel]?) {
         self.imageModelArray = imageModelArray
         self.textFrame = textFrame
     }
@@ -148,7 +148,9 @@ private extension PYTextView {
                 imageModel.framePrivate = delegateBounds
                 let imageName = imageModel.url ?? ""
                 let image = UIImage.init(named: imageName)
-                context.draw(image!.cgImage!, in: delegateBounds)
+                let imageData = image?.compressImage(maxLength: 10240)
+                let img = UIImage.init(data: imageData ?? Data())
+                context.draw((img?.cgImage!)!, in: delegateBounds)
             }
         }
     }
