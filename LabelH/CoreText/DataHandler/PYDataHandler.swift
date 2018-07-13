@@ -22,7 +22,7 @@ protocol PYDataHandlerCompleteDelegate {
                    imageModelArray: [PYCoreTextImageBaseModel])
 }
 
-@objc protocol PYDataHandlerDelegate {
+@objc protocol PYDataHandlerDataSource {
     
     /// 创建string 中的image 模型
     ///
@@ -54,13 +54,13 @@ class PYDataHandler: NSObject {
     ///   - modelArray: 数据集合
     ///   - imageDatagate:
     ///   - currentModelType: 需要返回对应的类型
-    class func handlerData<T>(modelArray:[T],
-                              handlerDataDelegate: PYDataHandlerDelegate,
+    class func handlerData(modelArray:[Any],
+                              handlerDataDelegate: PYDataHandlerDataSource,
                               completCallBack: ((_ attribute: NSMutableAttributedString,
         _ imageModelArray: [PYCoreTextImageBaseModel])->())?,
-                              _ currentModelType:@escaping ((_ currentModel: T) -> (ModelType?))) {
+                              _ currentModelType: ((_ currentModel: Any) -> (ModelType?))?) {
         handlerModelArray(modelArray: modelArray,handlerDataDelegate: handlerDataDelegate,{ (data) -> (PYDataHandler.ModelType?) in
-            return currentModelType(data)
+            return currentModelType?(data)
         }) { (string, imageModelArray) in
             completCallBack?(string,imageModelArray)
         }
@@ -73,10 +73,10 @@ class PYDataHandler: NSObject {
     ///   - modelArray: 数据集合
     ///   - imageDatagate:
     ///   - currentModelType: 需要返回对应的类型
-    class func handlerData<T>(modelArray:[T],
-                              handlerDataDelegate: PYDataHandlerDelegate,
+    class func handlerData(modelArray:[Any],
+                              handlerDataDelegate: PYDataHandlerDataSource,
                               _ completDelegate:PYDataHandlerCompleteDelegate? = nil,
-                              _ currentModelType:@escaping ((_ currentModel: T) -> (ModelType?))) {
+                              _ currentModelType:@escaping ((_ currentModel: Any) -> (ModelType?))) {
         
         handlerModelArray(modelArray: modelArray, handlerDataDelegate: handlerDataDelegate,{ (data) -> (PYDataHandler.ModelType?) in
             return currentModelType(data)
@@ -86,9 +86,9 @@ class PYDataHandler: NSObject {
         }
     }
     
-    private class func handlerModelArray<T>(modelArray:[T],
-                                            handlerDataDelegate: PYDataHandlerDelegate,
-                                            _ currentModelType:@escaping ((_ currentModel: T) -> (ModelType?)),
+    private class func handlerModelArray(modelArray:[Any],
+                                            handlerDataDelegate: PYDataHandlerDataSource,
+                                            _ currentModelType:@escaping ((_ currentModel: Any) -> (ModelType?)),
                                             _ complete:((_ str: NSMutableAttributedString, _ imageModelArray:[PYCoreTextImageBaseModel])->())?){
         
         let attributedStringM = NSMutableAttributedString()
@@ -127,7 +127,7 @@ class PYDataHandler: NSObject {
     ///   - model: 网络数据模型
     ///   - textDelegate: delegate
     /// - Returns: 返回 attributed
-    private class func handleText<T>(model: T, textDelegate: PYDataHandlerDelegate) -> NSMutableAttributedString {
+    private class func handleText<T>(model: T, textDelegate: PYDataHandlerDataSource) -> NSMutableAttributedString {
         
         let textModel = textDelegate.createTextModel(model: model)
         
@@ -137,7 +137,7 @@ class PYDataHandler: NSObject {
         return attri ?? NSMutableAttributedString(string: "")
     }
     
-    private class func handleLink<T>(model: T, textDelegate: PYDataHandlerDelegate) -> NSMutableAttributedString {
+    private class func handleLink<T>(model: T, textDelegate: PYDataHandlerDataSource) -> NSMutableAttributedString {
         let linkModel = textDelegate.createLinkModel(model: model)
         let handler = linkModel.attributeHandler
         let attri = handler?.createMutableAttributedStringIfExsitStr()
@@ -150,7 +150,7 @@ class PYDataHandler: NSObject {
     ///   - model: 网络数据的model model
     ///   - imageDelegate: imageDelegate
     /// - Returns: 处理后的image站位字符
-    private class func handlerImageData<T>(model:T,imageDelegate: PYDataHandlerDelegate) -> (NSMutableAttributedString,PYCoreTextImageBaseModel){
+    private class func handlerImageData<T>(model:T,imageDelegate: PYDataHandlerDataSource) -> (NSMutableAttributedString,PYCoreTextImageBaseModel){
         
         let imageModel = imageDelegate.createImageModel(model: model)
         

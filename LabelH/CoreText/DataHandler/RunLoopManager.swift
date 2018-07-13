@@ -29,7 +29,7 @@ class RunLoopManager: NSObject {
     var loopMaxConcurrency: NSInteger = 100
     
     /// taskArray 最大的count
-    var taskArrayMaxCount: NSInteger?
+    var taskArrayMaxCount: NSInteger = NSInteger.max
     
     // MARK: property timer
     
@@ -41,7 +41,7 @@ class RunLoopManager: NSObject {
         get { return minSecondDuration_private }
         set {
             timer_prevate = nil
-            minSecondDuration_private = newValue <= 0 ? 1 : newValue
+            minSecondDuration_private = newValue <= 0 ? 0.1 : newValue
         }
     }
 //    var timerDelegateArray:[AnyObject] { return timerDelegateArray_private }
@@ -62,11 +62,9 @@ class RunLoopManager: NSObject {
     /// - Parameters:
     ///   - task: task
     func addTask(task:(()->())?) -> () {
-        if let taskArrayMaxCount = taskArrayMaxCount {
-            if taskArray.count > taskArrayMaxCount && taskArray.count > 0 {
-                let element = taskArray_private.remove(at: 0)
-                taskArrayNotExecute.append(element)
-            }
+        if taskArray.count > taskArrayMaxCount && taskArray.count > 0 {
+            let element = taskArray_private.remove(at: 0)
+            taskArrayNotExecute.append(element)
         }
         if let task = task {
             taskArray_private.append(task)
@@ -130,10 +128,10 @@ class RunLoopManager: NSObject {
             //取出上下文 就是当前的runloopManager
             let manager = unsafeBitCast(context, to: RunLoopManager.self)
             //取出任务
-            if manager.taskArray.count <= 0 {
+            if manager.taskArray_private.count <= 0 {
                 return
             }
-            for _ in 0 ..< manager.loopMaxConcurrency {
+            for _ in 0 ... manager.loopMaxConcurrency {
                 if manager.taskArray_private.count <= 0 {
                     manager.complete?()
                     break

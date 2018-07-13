@@ -55,7 +55,7 @@ class PYTextView: UIView {
     
     ///设置
     private func setup() {
-        
+  
     }
     
     // MARK: handle event
@@ -88,7 +88,6 @@ class PYTextView: UIView {
     // MARK:life cycles
     
     // MARK: lazy loads
-    
     
 }
 
@@ -148,7 +147,7 @@ private extension PYTextView {
                 imageModel.framePrivate = delegateBounds
                 let imageName = imageModel.url ?? ""
                 let image = UIImage.init(named: imageName)
-                let imageData = image?.compressImage(maxLength: 10240)
+                let imageData = image?.compressImage(maxLength: 20480)
                 let img = UIImage.init(data: imageData ?? Data())
                 context.draw((img?.cgImage!)!, in: delegateBounds)
             }
@@ -190,4 +189,6 @@ private extension PYTextView {
         runBounds = CGRect.init(x: x, y: y, width: w, height: h)
         return runBounds
     }
+    
+
 }

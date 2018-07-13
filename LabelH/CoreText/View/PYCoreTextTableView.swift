@@ -27,7 +27,7 @@ class PYCoreTextTableView: UITableView,UITableViewDelegate,UITableViewDataSource
     }
     
     // MARK: - properties
-    weak var handlerDataDelegate: PYDataHandlerDelegate?
+    weak var handlerDataDelegate: PYDataHandlerDataSource?
     weak var coreTextTableViewDelegate: PYCoreTextTableViewDelegate?
     
     var modelArray = [Any]() {
@@ -60,7 +60,7 @@ class PYCoreTextTableView: UITableView,UITableViewDelegate,UITableViewDataSource
     
     // MARK:functions
     func setupCellData(indexPath: IndexPath,
-                       delegate: PYDataHandlerDelegate?) {
+                       delegate: PYDataHandlerDataSource?) {
         /// 缓存获取数据
 //        if getCachDataAndSetupCellData(indexPath: indexPath) { return }
         
@@ -98,8 +98,8 @@ class PYCoreTextTableView: UITableView,UITableViewDelegate,UITableViewDataSource
 //                            imageModelArray: imgArray)
             
             if cell.frame.height < coreTextData.cellHeight {
-                reloadRows(at: [indexPath],
-                           with: UITableViewRowAnimation.none)
+//                reloadRows(at: [indexPath],
+//                           with: UITableViewRowAnimation.none)
             }
         }
     }

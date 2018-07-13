@@ -9,7 +9,7 @@
 import UIKit
 import SnapKit
 
-class ViewController: UIViewController,PYDataHandlerDelegate,PYCoreTextTableViewDelegate {
+class ViewController: UIViewController,PYDataHandlerDataSource,PYCoreTextTableViewDelegate {
  
   
   
@@ -59,8 +59,27 @@ class ViewController: UIViewController,PYDataHandlerDelegate,PYCoreTextTableView
     override func viewDidLoad() {
         super.viewDidLoad()
 //        coreText()
+        setupTextScrollView()
+//       setupTableView()
+    }
+    
+    func setupTextScrollView() {
+        let button = UIButton()
+        button.addTarget(self, action: #selector(clickButton), for: UIControlEvents.touchUpInside)
+        view.addSubview(button)
+        button.backgroundColor = UIColor.blue
+        button.setTitle("button", for: UIControlState.normal)
+        button.snp.makeConstraints { (make) in
+            make.left.top.right.equalTo(view)
+            make.height.equalTo(100)
+        }
         
-       setupTableView()
+        view.addSubview(coreTextView)
+        coreTextView.handlerDataSource = self
+        coreTextView.snp.makeConstraints { (make) in
+            make.left.bottom.right.equalTo(view)
+            make.top.equalTo(button.snp.bottom)
+        }
     }
     
     private func setupTableView() {
@@ -89,15 +108,21 @@ class ViewController: UIViewController,PYDataHandlerDelegate,PYCoreTextTableView
         let model2 = TextModel.init()
         var modelArray1 = [Any]()
         var modelArray2 = [Any]()
-        for _ in 0 ..< 12 {
-            modelArray1.append(model1)
-            modelArray1.append(model2)
-        }
-        for _ in 0 ..< 5 {
-            modelArray2.append(model1)
+//        for _ in 0 ..< 122 {
+//            modelArray1.append(model1)
+//            modelArray1.append(model2)
+//        }
+        for _ in 0 ..< 1 {
+//            modelArray2.append(model1)
             modelArray2.append(model2)
         }
-        tableView.modelArray = modelArray2
+//        tableView.modelArray = modelArray2
+        coreTextView.modelArray = modelArray2
+        coreTextView.handlerData(modelArray: modelArray2) { (model) -> (PYDataHandler.ModelType?) in
+            if model is TextModel { return .text }
+            if model is ImageModel { return .image }
+            return .text
+        }
     }
     
     
@@ -106,6 +131,9 @@ class ViewController: UIViewController,PYDataHandlerDelegate,PYCoreTextTableView
        let tableView = PYCoreTextTableView.init(frame: CGRect.zero, style: UITableViewStyle.plain)
         return tableView
     }()
+    
+    lazy var coreTextView = PYCoreTextView()
+    
     
     func coreText() {
 
@@ -128,7 +156,7 @@ class ViewController: UIViewController,PYDataHandlerDelegate,PYCoreTextTableView
             modelArray2.append(model1)
             modelArray2.append(model2)
         }
-//        PYDataHandler.handlerData(modelArray: modelArray2, delegate: self) { (model) -> (PYDataHandler.ModelType) in
+//        PYDataHandler.handlerData(modelArray: modelArray2, handlerDataDelegate: self) { (model) -> (PYDataHandler.ModelType) in
 //            if model is TextModel { return .text }
 //            if model is ImageModel { return .image }
 //            return .text
@@ -148,14 +176,27 @@ extension ViewController {
     func createTextModel(model: Any) -> PYCoreTextStringBaseModel {
         let textModel = PYCoreTextStringBaseModel.init()
         
-        let hanle = self.attributeHandler.py_copy()
+        let handler = self.attributeHandler.py_copy()
+        let style = NSMutableParagraphStyle()
+        
+        switch Int(arc4random_uniform(3)) {
+        case 0:
+            style.alignment = .left
+        case 1:
+            style.alignment = .center
+        case 2:
+            style.alignment = .right
+        default: style.alignment = .right
+        }
+        handler.paragraphStyle = style
+        
         if let model = model as? TextModel {
-            hanle.foregroundColor = model.textColor
-            hanle.text = model.str
-            hanle.font = PYAttributedHandler.Font(size: 42)
+            handler.foregroundColor = model.textColor
+            handler.text = model.str
+            handler.font = PYAttributedHandler.Font(size: 32)
         }
         
-        textModel.attributeHandler = hanle
+        textModel.attributeHandler = handler
         return textModel
     }
     
@@ -169,7 +210,21 @@ extension ViewController {
         imageModel.ascent = model.bounds?.height ?? 0
         imageModel.width = model.bounds?.width ?? 0
         imageModel.url = model.url ?? ""
-        imageModel.attributeHandler = self.attributeHandler.py_copy()
+        let handler = self.attributeHandler.py_copy()
+        let style = NSMutableParagraphStyle()
+
+        switch Int(arc4random_uniform(3)) {
+        case 0:
+            style.alignment = .left
+        case 1:
+            style.alignment = .center
+        case 2:
+            style.alignment = .right
+        default: style.alignment = .right
+        }
+        
+        handler.paragraphStyle = style
+        imageModel.attributeHandler = handler
         return imageModel
     }
     
@@ -186,13 +241,11 @@ extension ViewController {
         let pyFrame = PYFrameHander.init(string: attribute, layout: layout)
         
         
-//        textView.imageModelArray = imageModelArray
-        //        textView.attributedString = attribute
-//        textView.textFrame = pyFrame
-//        let size = CGSize.init(width: pyFrame.attributedMaxSize.width, height: pyFrame.attributedMaxSize.height)
-        //        textView.frame = CGRect.init(origin: CGPoint.init(x: 0, y: 0), size: size)
-        //        pyFrame.isAutoHeight = true
-        //        pyFrame.isAutoWeight = true
+        textView.imageModelArray = imageModelArray
+                textView.attributedString = attribute
+        textView.textFrame = pyFrame
+        let size = CGSize.init(width: pyFrame.attributedMaxSize.width, height: pyFrame.attributedMaxSize.height)
+                textView.frame = CGRect.init(origin: CGPoint.init(x: 0, y: 0), size: size)
 //        textView.snp.updateConstraints { (make) in
 //            //            make.height.equalTo(size.height)
 //            //            make.width.equalTo(size.width)

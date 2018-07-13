@@ -19,6 +19,9 @@
 		032C0C9120D3BC0A007CCE44 /* LabelHTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032C0C9020D3BC0A007CCE44 /* LabelHTests.swift */; };
 		032C0C9C20D3BC0A007CCE44 /* LabelHUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032C0C9B20D3BC0A007CCE44 /* LabelHUITests.swift */; };
 		033E938C20F61ED300616DDE /* UIImage+zip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033E938B20F61ED300616DDE /* UIImage+zip.swift */; };
+		033E938E20F624BF00616DDE /* PYTextScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033E938D20F624BF00616DDE /* PYTextScrollView.swift */; };
+		036DF31420F7532C002FF446 /* PYCoreTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036DF31320F7532C002FF446 /* PYCoreTextView.swift */; };
+		036DF31620F75888002FF446 /* UIView+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036DF31520F75888002FF446 /* UIView+Layout.swift */; };
 		03C5D5B020F37ED100E53131 /* PYCoreLinkBaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5D5AF20F37ED100E53131 /* PYCoreLinkBaseModel.swift */; };
 		03C5D5B220F3857300E53131 /* RunLoopManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5D5B120F3857300E53131 /* RunLoopManager.swift */; };
 		03C5D5B720F4A0B100E53131 /* PYCoreTextTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5D5B620F4A0B100E53131 /* PYCoreTextTableView.swift */; };
@@ -73,6 +76,9 @@
 		032C0C9B20D3BC0A007CCE44 /* LabelHUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelHUITests.swift; sourceTree = "<group>"; };
 		032C0C9D20D3BC0A007CCE44 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		033E938B20F61ED300616DDE /* UIImage+zip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+zip.swift"; sourceTree = "<group>"; };
+		033E938D20F624BF00616DDE /* PYTextScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PYTextScrollView.swift; sourceTree = "<group>"; };
+		036DF31320F7532C002FF446 /* PYCoreTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PYCoreTextView.swift; sourceTree = "<group>"; };
+		036DF31520F75888002FF446 /* UIView+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Layout.swift"; sourceTree = "<group>"; };
 		03745EBE20DCD98E00AADC51 /* LabelH-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "LabelH-Bridging-Header.h"; sourceTree = "<group>"; };
 		03C5D5AF20F37ED100E53131 /* PYCoreLinkBaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PYCoreLinkBaseModel.swift; sourceTree = "<group>"; };
 		03C5D5B120F3857300E53131 /* RunLoopManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunLoopManager.swift; sourceTree = "<group>"; };
@@ -129,11 +135,11 @@
 		0307AA2F20E0E3EC00AAA5B1 /* CoreText */ = {
 			isa = PBXGroup;
 			children = (
+				033E938F20F624CD00616DDE /* Extension */,
 				03C5D5B420F4A05A00E53131 /* DataHandler */,
 				03C5D5B320F4A05000E53131 /* View */,
 				0307AA3220E0E50C00AAA5B1 /* Model */,
 				03E097EB20EA126C001EE7CF /* PYCoreTextTemp.swift */,
-				033E938B20F61ED300616DDE /* UIImage+zip.swift */,
 			);
 			path = CoreText;
 			sourceTree = "<group>";
@@ -204,13 +210,24 @@
 			path = LabelHUITests;
 			sourceTree = "<group>";
 		};
+		033E938F20F624CD00616DDE /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				033E938B20F61ED300616DDE /* UIImage+zip.swift */,
+				03C5D5BA20F4A58900E53131 /* UIColor+Arc4random.swift */,
+				036DF31520F75888002FF446 /* UIView+Layout.swift */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
 		03C5D5B320F4A05000E53131 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				03C5D5BA20F4A58900E53131 /* UIColor+Arc4random.swift */,
 				03E097CB20E33049001EE7CF /* PYTextView.swift */,
 				03C5D5B620F4A0B100E53131 /* PYCoreTextTableView.swift */,
 				03C5D5B820F4A12E00E53131 /* PYCoreTextTableViewCell.swift */,
+				033E938D20F624BF00616DDE /* PYTextScrollView.swift */,
+				036DF31320F7532C002FF446 /* PYCoreTextView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -489,7 +506,9 @@
 				032C0C7E20D3BC09007CCE44 /* ViewController.swift in Sources */,
 				032C0C7C20D3BC09007CCE44 /* AppDelegate.swift in Sources */,
 				03C5D5BB20F4A58900E53131 /* UIColor+Arc4random.swift in Sources */,
+				036DF31620F75888002FF446 /* UIView+Layout.swift in Sources */,
 				03E097CE20E331E8001EE7CF /* PYFrameHander.swift in Sources */,
+				033E938E20F624BF00616DDE /* PYTextScrollView.swift in Sources */,
 				03C5D5B220F3857300E53131 /* RunLoopManager.swift in Sources */,
 				03CADB9820EB9A76009E8B2F /* PYCoreTextStringBaseModel.swift in Sources */,
 				03E097E420E4FCAC001EE7CF /* ImageModel.swift in Sources */,
@@ -498,6 +517,7 @@
 				03E097CC20E33049001EE7CF /* PYTextView.swift in Sources */,
 				03CADB9A20EBA5AB009E8B2F /* TextModel.swift in Sources */,
 				0307AA3420E0E52000AAA5B1 /* PYCoreTextImageModel.swift in Sources */,
+				036DF31420F7532C002FF446 /* PYCoreTextView.swift in Sources */,
 				03C5D5B720F4A0B100E53131 /* PYCoreTextTableView.swift in Sources */,
 				03E097EC20EA126C001EE7CF /* PYCoreTextTemp.swift in Sources */,
 			);

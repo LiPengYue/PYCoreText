@@ -26,10 +26,11 @@ class PYCoreTextTableViewCell: UITableViewCell {
     func reloadData(cellHeight: CGFloat? = -1, textFrame: PYFrameHander?,imageModelArray: [PYCoreTextImageBaseModel]?) {
         var h = cellHeight ?? -1
         h = h <= 0 ? (textFrame?.getAttributedHeight(W: self.frame.width) ?? 0) : h
-        updateTextViewHeight(height: h)
+//        updateTextViewHeight(height: h)
         self.textFrame = textFrame
         self.imageModelArray = imageModelArray
-        coreTextView.reloadData(textFrame: textFrame, imageModelArray: imageModelArray)
+//        coreTextView.reloadData(textFrame: textFrame, imageModelArray: imageModelArray)
+        scrollView.reloadData(textFrame: textFrame, imageModelArray: imageModelArray)
     }
     var imageModelArray: [PYCoreTextImageBaseModel]?
     var textFrame: PYFrameHander?
@@ -76,7 +77,7 @@ class PYCoreTextTableViewCell: UITableViewCell {
         contentView.addConstraints([top,left,right,bottom])
     }
     private lazy var heightConstraints: NSLayoutConstraint = {
-        return self.creteTextViewHeightConstraint(height: 0)
+        return self.creteTextViewHeightConstraint(height: 330)
     }()
     
 
@@ -110,6 +111,7 @@ class PYCoreTextTableViewCell: UITableViewCell {
         textView.backgroundColor = UIColor.randomColor
         return textView
     }()
+    let scrollView = PYTextScrollView()
 }
 
 

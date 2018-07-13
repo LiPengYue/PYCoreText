@@ -12,7 +12,6 @@ extension UIImage {
     
     ///对指定图片进行拉伸
     func resizableImage(name: String) -> UIImage {
-
         var normal = UIImage(named: name)!
         let imageWidth = normal.size.width * 0.5
         let imageHeight = normal.size.height * 0.5
@@ -34,9 +33,11 @@ extension UIImage {
         let newSize = scaleImage(imageLength: 300)
         guard let newImage = self.resizeImage(newSize: newSize) else { return nil }
         
-        var compress:CGFloat = 0.9
-        var data = UIImageJPEGRepresentation(newImage, compress)
-        
+        var compress:CGFloat = 1
+        var data = UIImageJPEGRepresentation(self, compress)
+        if (data?.count ?? 0) < maxLength {
+            return data
+        }
         while (data?.count ?? 0) > maxLength && compress > 0.01 {
             compress -= 0.02
             data = UIImageJPEGRepresentation(newImage, compress)
