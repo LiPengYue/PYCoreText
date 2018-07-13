@@ -8,8 +8,8 @@ import UIKit
 class TextModel: NSObject {
     var str: String {
         var str = ""
-        for _ in 0 ..< 63 {
-            str += "\n哈,哈哈哈哈哈哈哈哈哈?\n"
+        for _ in 0 ..< 100 {
+            str += "哈,哈哈哈哈哈哈哈哈哈?"
         }
         return str
     }
