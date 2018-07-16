@@ -19,6 +19,7 @@ class RunLoopManager: NSObject {
         openRunloopManager()
     }
     static let defult = RunLoopManager()
+    
     /// 缓存的tasks
     var taskArray:[()->()] { return taskArray_private }
     
@@ -31,12 +32,17 @@ class RunLoopManager: NSObject {
     /// taskArray 最大的count
     var taskArrayMaxCount: NSInteger = NSInteger.max
     
-    // MARK: property timer
-    
     /// timer
     var timer: Timer? { get { return createTimerIfNotTimer() } }
     
-    /// 最短时长 默认为1 如果 minSecondDuration <= 0 那么默认为1
+    /// close loopManager
+    var isCloseLoopManager = false {
+        didSet {
+            isCloseLoopManagerFunc()
+        }
+    }
+   
+    /// 最短时长 默认为0.1s 如果 minSecondDuration <= 0 那么默认为0.1s
     var minSecondDuration: CGFloat {
         get { return minSecondDuration_private }
         set {
@@ -44,24 +50,13 @@ class RunLoopManager: NSObject {
             minSecondDuration_private = newValue <= 0 ? 0.1 : newValue
         }
     }
-//    var timerDelegateArray:[AnyObject] { return timerDelegateArray_private }
-    /// 添加 timer callBack的delegate
-//    func addTimerDelegate(delegate: AnyObject?) {
-//        if let delegate = delegate {
-//            let task = { [weak self,weak delegate] in
-//                if let delegate = delegate {
-//                    self?.timerDelegateArray_private.append(delegate)
-//                }
-//            }
-//            task()
-//        }
-//    }
     
-    /// 添加task
+    /// 添加task 如果manager处于关闭状态，那么将自动 开启 “if !isCloseLoopManager { isCloseLoopManager = false }”
     ///
     /// - Parameters:
     ///   - task: task
     func addTask(task:(()->())?) -> () {
+        if !isCloseLoopManager { isCloseLoopManager = false }
         if taskArray.count > taskArrayMaxCount && taskArray.count > 0 {
             let element = taskArray_private.remove(at: 0)
             taskArrayNotExecute.append(element)
@@ -74,9 +69,14 @@ class RunLoopManager: NSObject {
     /// 完成
     func completeFunc(complete: (()->())?) { self.complete = complete }
     
+    /// 删除所有的tasks
+    func deleteAllTask() {
+        taskArray_private.removeAll()
+        taskArrayNotExecute.removeAll()
+    }
+    
     /// 完成后的block
     private var complete:(()->())?
-//    private var timerDelegateArray_private = [AnyObject]()
     private var timer_prevate: Timer?
     private var taskArray_private = [()->()]()
     private var minSecondDuration_private: CGFloat = 0.1 { didSet {createTimerIfNotTimer()} }
@@ -99,7 +99,7 @@ class RunLoopManager: NSObject {
     }
     
     /// 开启runLoop
-    func openRunloopManager() {
+    private func openRunloopManager() {
         let runloop = CFRunLoopGetCurrent()
         let unsafeBit = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
         var context = CFRunLoopObserverContext(version: 0,
@@ -119,7 +119,7 @@ class RunLoopManager: NSObject {
             CFRunLoopAddObserver(runloop, observer, .commonModes);
         }
     }
-    
+
     ///回调函数
     private func observerCallbackFunc() -> CFRunLoopObserverCallBack {
         return {(observer, activity, context) -> Void in
@@ -142,8 +142,14 @@ class RunLoopManager: NSObject {
            
         }
     }
-//    var isOpenManager: Bool = true
-//    func deinitManager() {
-//        timer = nil
-//    }
+    private func isCloseLoopManagerFunc() {
+        isCloseLoopManager ? sleepTimer() : weakUpTimer()
+    }
+    private func sleepTimer() {
+        timer_prevate?.fireDate = Date.distantFuture
+    }
+    private func weakUpTimer() {
+        timer_prevate?.fireDate = NSDate.init() as Date
+    }
+
 }

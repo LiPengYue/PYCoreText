@@ -24,11 +24,20 @@ class PYTextScrollView: UIScrollView {
     
     
     // MARK: - func
+    var imageModelArray: [PYCoreTextImageBaseModel]?
     /// loadData
     func reloadData(textFrame: PYFrameHander?,imageModelArray: [PYCoreTextImageBaseModel]?) {
         let currentHeight = textFrame?.getAttributedHeight(W: coreTextViewWidth)
         updateTextViewHeightAndScrollSize(height: currentHeight ?? 0)
         coreTextView.reloadData(textFrame: textFrame, imageModelArray: imageModelArray)
+    }
+    
+    
+    ///
+    ///
+    /// - Parameter textFrame:
+    func addFrameHandler(textFrame: PYFrameHander?) {
+        
     }
     // MARK: network
     
@@ -36,17 +45,17 @@ class PYTextScrollView: UIScrollView {
     
     ///设置
     private func setup() {
-        setupLayout()
+        
     }
     
-    private func setupLayout() {
+    private func setupLayout(referenceView: UIView,coreTextView: PYTextView, height: CGFloat) {
         addSubview(coreTextView)
         coreTextView.translatesAutoresizingMaskIntoConstraints = false
-        coreTextView.layoutTopEqutoSuperView()
-        coreTextView.layoutLeftEqutoSuperView()
-        coreTextView.layoutRightEqutoSuperView()
+        coreTextView.layoutSelfTopEqutoViewBottom(toView: referenceView,offset:0)
+        coreTextView.layoutLeftToView(view: referenceView, offset: 0)
+        coreTextView.layoutRightToView(toView: referenceView, offsest: 0)
         coreTextView.layoutWidthEqutoSuperView()
-        heightConstraint = coreTextView.creteHeightConstraint(height: 0)
+        heightConstraint = coreTextView.creteHeightConstraint(height: height)
     }
     
     private func updateTextViewHeightAndScrollSize(height: CGFloat) {
@@ -62,6 +71,11 @@ class PYTextScrollView: UIScrollView {
         
     }
     
+    /// 添加textView
+    private func appendTextView() {
+        coreTextViewArray.append(PYTextView())
+    }
+
     
     // MARK:functions
     var isFirstLayout = true
@@ -72,6 +86,8 @@ class PYTextScrollView: UIScrollView {
         }
         isFirstLayout = false
     }
+    
+    
     // MARK: lazy loads
     private var coreTextView: PYTextView = {
         let textView = PYTextView()
@@ -85,13 +101,12 @@ class PYTextScrollView: UIScrollView {
         return frame.width - edgeInsets.left - edgeInsets.right
     }
     
-    private var coreTextViewHeight: CGFloat {
-        return frame.height - edgeInsets.top - edgeInsets.bottom
-    }
     private var coreTextViewX: CGFloat {
         return edgeInsets.left
     }
-    private var coreTextViewY: CGFloat {
-        return edgeInsets.top
+    private var currentCoreTextViewY: CGFloat {
+        return coreTextViewArray.last?.frame.maxY ?? edgeInsets.top
     }
+    
+    private var coreTextViewArray = [PYTextView]()
 }

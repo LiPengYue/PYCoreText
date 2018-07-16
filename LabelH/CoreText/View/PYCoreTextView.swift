@@ -32,6 +32,11 @@ class PYCoreTextView: UIView {
     // MARK: - public func
     
     // MARK: public network
+    func appendData(modelArray: [Any],
+                    _ currentModelType: ((_ currentModel: Any) -> (PYDataHandler.ModelType?))?) {
+        
+    }
+    
     func handlerData(modelArray: [Any],
                              _ currentModelType: ((_ currentModel: Any) -> (PYDataHandler.ModelType?))?) {
         /// 缓存获取数据
@@ -54,6 +59,7 @@ class PYCoreTextView: UIView {
                                                 imgArray: [PYCoreTextImageBaseModel]?) {
             
             let textFrame = createTextFrame(attribute: attribute)
+        
         _ = ceratCoreTextDada(textFrame: textFrame,
                                                  imageArray: imgArray,
                                                  cellWidth: 0)
@@ -87,6 +93,10 @@ class PYCoreTextView: UIView {
 //    }
     
     
+    /// 创建 textFrameHandler
+    ///
+    /// - Parameter attribute: attributedString
+    /// - Returns: PYFrameHandler
     func createTextFrame(attribute: NSMutableAttributedString) -> PYFrameHander {
         let inset = UIEdgeInsets.init(top: 0,
                                       left: 0,
@@ -133,8 +143,8 @@ class PYCoreTextView: UIView {
         addSubview(textScrollView)
         textScrollView.translatesAutoresizingMaskIntoConstraints = false
         textScrollView.layoutSuperViewEdges()
-//        textScrollView.layoutHeightEqutoSuperView()
-//        textScrollView.layoutWidthEqutoSuperView()
+        textScrollView.layoutHeightEqutoSuperView()
+        textScrollView.layoutWidthEqutoSuperView()
     }
     // MARK: handle event
     ///事件
@@ -148,6 +158,10 @@ class PYCoreTextView: UIView {
     
     // MARK: lazy loads
     let textScrollView = PYTextScrollView()
+    deinit {
+        RunLoopManager.defult.isCloseLoopManager = true
+        RunLoopManager.defult.deleteAllTask()
+    }
 }
 
 extension PYCoreTextView {

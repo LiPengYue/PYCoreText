@@ -9,36 +9,54 @@
 import UIKit
 
 extension UIView {
+    // MARK: - top
     @discardableResult
     func layoutTopEqutoSuperView() -> NSLayoutConstraint {
+        return layoutTopToView(toView: superview!, offset:  0)
+    }
+    @discardableResult
+    func layoutTopToView(toView: UIView, offset: CGFloat) -> NSLayoutConstraint {
         let top = NSLayoutConstraint.init(item: self,
                                           attribute: .top,
                                           relatedBy: .equal,
-                                          toItem: superview,
+                                          toItem: toView,
                                           attribute: .top,
                                           multiplier: 1,
                                           constant: 0)
         top.isActive = true
-        superview?.addConstraint(top)
+        toView.addConstraint(top)
         return top
     }
     
+    // MARK: - left
     @discardableResult
     func layoutLeftEqutoSuperView() -> NSLayoutConstraint {
-        let left = NSLayoutConstraint.init(item: self,
-                                           attribute: .left,
-                                           relatedBy: .equal,
-                                           toItem: superview,
-                                           attribute: .left,
-                                           multiplier: 1,
-                                           constant: 0)
-        left.isActive = true
-        superview?.addConstraint(left)
-        return left
+        return layoutLeftToView(view: superview!, offset: 0)
     }
     
     @discardableResult
+    func layoutLeftToView(view: UIView,offset: CGFloat) -> NSLayoutConstraint {
+        let left = NSLayoutConstraint.init(item: self,
+                                           attribute: .left,
+                                           relatedBy: .equal,
+                                           toItem: view,
+                                           attribute: .left,
+                                           multiplier: 1,
+                                           constant: offset)
+        left.isActive = true
+        view.addConstraint(left)
+        return left
+    }
+    
+    
+    // MARK: - right
+    @discardableResult
     func layoutRightEqutoSuperView() -> NSLayoutConstraint {
+        return layoutRightToView(toView: superview!, offsest: 0)
+    }
+    
+    @discardableResult
+    func layoutRightToView(toView: UIView, offsest: CGFloat) -> NSLayoutConstraint {
         let right = NSLayoutConstraint.init(item: self,
                                             attribute: .right,
                                             relatedBy: .equal,
@@ -51,33 +69,38 @@ extension UIView {
         return right
     }
     
+    // MARK: - edgs
     @discardableResult
     func layoutSuperViewEdges() -> (top: NSLayoutConstraint,bottom: NSLayoutConstraint,left:NSLayoutConstraint, right: NSLayoutConstraint) {
+       return layoutEdges(toView: superview!)
+    }
+    @discardableResult
+    func layoutEdges(toView: UIView) -> (top: NSLayoutConstraint,bottom: NSLayoutConstraint,left:NSLayoutConstraint, right: NSLayoutConstraint) {
         let left = NSLayoutConstraint.init(item: self,
                                            attribute: .left,
                                            relatedBy: .equal,
-                                           toItem: superview,
+                                           toItem: toView,
                                            attribute: .left,
                                            multiplier: 1,
                                            constant: 0)
         let right = NSLayoutConstraint.init(item: self,
                                             attribute: .right,
                                             relatedBy: .equal,
-                                            toItem: superview,
+                                            toItem: toView,
                                             attribute: .right,
                                             multiplier: 1,
                                             constant: 0)
         let top = NSLayoutConstraint.init(item: self,
                                           attribute: .top,
                                           relatedBy: .equal,
-                                          toItem: superview,
+                                          toItem: toView,
                                           attribute: .top,
                                           multiplier: 1,
                                           constant: 0)
         let bottom = NSLayoutConstraint.init(item: self,
                                              attribute: .bottom,
                                              relatedBy: .equal,
-                                             toItem: superview,
+                                             toItem: toView,
                                              attribute: .bottom,
                                              multiplier: 1,
                                              constant: 0)
@@ -85,10 +108,10 @@ extension UIView {
         bottom.isActive = true
         left.isActive = true
         right.isActive = true
-        superview?.addConstraints([top,left,right,bottom])
+        toView.addConstraints([top,left,right,bottom])
         return (top,bottom,left,right)
     }
-    
+   
     @discardableResult
     func updateHeightConstraint(height: CGFloat,constraint: NSLayoutConstraint) -> NSLayoutConstraint {
         let newConstraint = creteHeightConstraint(height: height)
@@ -143,4 +166,18 @@ extension UIView {
         superview?.addConstraint(width)
         return width
     }
+    
+    @discardableResult
+    func layoutSelfTopEqutoViewBottom(toView: UIView,offset: CGFloat) -> NSLayoutConstraint {
+        let top = NSLayoutConstraint.init(item: self,
+                                          attribute: .top,
+                                          relatedBy: .equal,
+                                          toItem: toView,
+                                          attribute: .bottom,
+                                          multiplier: 1,
+                                          constant: offset)
+        return top
+    }
+
+
 }

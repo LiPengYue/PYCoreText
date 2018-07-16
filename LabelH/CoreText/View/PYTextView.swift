@@ -80,7 +80,7 @@ class PYTextView: UIView {
         conversionContext(context: context)
         
         /// 绘制文字
-        CTFrameDraw(ctFrame, context)
+
 
         /// 绘图
         drawImageIfHaveImage(ctFrame: ctFrame, context: context)
