@@ -37,6 +37,7 @@ class PYTextView: UIView {
         didSet {
             textFrame?.reloadProperty(textView: self)
             setNeedsDisplay()
+//            textView.attributedText = textFrame?.attributedString
         }
     }
    
@@ -55,7 +56,10 @@ class PYTextView: UIView {
     
     ///设置
     private func setup() {
-  
+        addSubview(textView)
+        textView.snp.makeConstraints { (make) in
+            make.edges.equalTo(self)
+        }
     }
     
     // MARK: handle event
@@ -78,17 +82,25 @@ class PYTextView: UIView {
         
         /// 转化坐标系
         conversionContext(context: context)
-        
+//        textFrame.drawData(context: context)
         /// 绘制文字
         CTFrameDraw(ctFrame, context)
+        let linePointers = CTFrameGetLines(ctFrame)
+        let count = CFArrayGetCount(linePointers)
 
+        
+        for i in 0 ..< 1 {
+            let linePoint = CFArrayGetValueAtIndex(linePointers, i)
+            let line = unsafeBitCast(linePoint, to: CTLine.self)
+            CTLineDraw(line, context)
+        }
         /// 绘图
         drawImageIfHaveImage(ctFrame: ctFrame, context: context)
     }
     // MARK:life cycles
     
     // MARK: lazy loads
-    
+    let textView: UITextView = UITextView()
 }
 
 
@@ -121,6 +133,12 @@ private extension PYTextView {
             let lineUnsafePoint = CFArrayGetValueAtIndex(ctLines, index)
             /// line
             let line = unsafeBitCast(lineUnsafePoint, to: CTLine.self)
+            
+            
+            // 调整成所需要的坐标
+            context.textPosition =
+            CTLineDraw(line, context)
+            
             
             let runs = CTLineGetGlyphRuns(line)
             let runsCount = CFArrayGetCount(runs)

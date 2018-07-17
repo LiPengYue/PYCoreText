@@ -22,8 +22,7 @@ class PYFrameHander: NSObject {
     }
     
     //MARK: - open
-    private var isAutoHeight: Bool = true
-    private var isAutoWeight: Bool = false
+   
     
     //MARK: open proprty
     /// 最左侧的位置
@@ -52,7 +51,7 @@ class PYFrameHander: NSObject {
     var attributedMaxH: CGFloat { return getAttributedSize_private().height }
     var attributedString: NSAttributedString? { return attributedString_private }
     weak var textView: PYTextView? { return textView_private }
-    
+    var subFrameData: SubFrameData { return subFrameData_private }
     
     /// 获取attributedString的高度
     ///
@@ -72,8 +71,18 @@ class PYFrameHander: NSObject {
         reLoadData()
     }
     
+    open func drawData(context: CGContext) {
+        self.subFrameData.enumeratePropertyUsingBlock { (isStop,index,path,ctFrame,attributedStr,frame) in
+            
+            guard let ctFrame = ctFrame else { return isStop = true}
+            CTFrameDraw(ctFrame, context)
+        }
+    }
+    
     // MARK: - private
     // MARK: private proprty
+    private var isAutoHeight: Bool = true
+    private var isAutoWeight: Bool = false
     private var textLayout: Layout? { didSet { setTextLayout() } }
     private var leftX_private: CGFloat = 0
     private var rightX_private: CGFloat = 0
@@ -89,7 +98,8 @@ class PYFrameHander: NSObject {
     private var ctFrame_private: CTFrame?
     private var attributedSize_private: CGSize = CGSize.zero
     private weak var textView_private: PYTextView?
-    
+    private var currenMaxHeight: CGFloat = 0
+    private var subFrameData_private: SubFrameData = SubFrameData()
     //MARK: private func
     /// 创建 ctFrame 并更新self.ctFrame 与self.cgPath
     ///
@@ -120,13 +130,8 @@ class PYFrameHander: NSObject {
         let leftX = insets_private.left
         let rightX = textViewW - insets_private.right
         let topY = insets_private.top
-//        let bottomY = topY + maxHeight_private + insets_private.bottom
          let bottomY = topY + maxHeight_private + insets_private.bottom
         var width = size.width
-//        if (width < (layout?.minWidth ?? 0)) {
-//            width = layout?.minWidth ?? 0
-//        }
-        
         let midWidth = rightX - leftX
         width = width < midWidth ? width : midWidth
         
@@ -135,8 +140,6 @@ class PYFrameHander: NSObject {
         rightX_private = rightX
         topY_private = topY
         bottomY_private = bottomY
-
-//        attributedSize_private = CGSize.init(width: midWidth + leftX, height: maxHeight_private + insets_private.bottom + topY)
     }
     @discardableResult
     private func reLoadData() -> CTFrame? {
@@ -144,25 +147,83 @@ class PYFrameHander: NSObject {
         guard let attributedString = attributedString_private else{ return nil }
         
         guard let textView = textView else { return nil}
+        width_private = textView.frame.width
+        reloadMaxFrameData(attributedString: attributedString)
+        return ctFrame
+    }
+    private func reloadMaxFrameData(attributedString: NSAttributedString) {
+        let framesetterAndSizeValue = getStringCTFramesetterAndSize(attributed: attributedString)
+        let size = framesetterAndSizeValue.1
+        setProperty(size: size)
+        let path = createCtFramePath(y: layout?.insets.top ?? 0,
+                                     size: size)
+        let ctFramesetter = framesetterAndSizeValue.0
+        ctFrame_private = setupCtFrame(ctFramesetter: ctFramesetter, path: path)
+    }
+    
+    func cutAttribtedStringCreateSubData (subLength: NSInteger) {
+        let count = (attributedString?.length ?? 0) / subLength
+        var currentmaxY: CGFloat = layout?.insets.top ?? 0
+        for i in 0 ... count {
+            // get attributed
+            let strAttributed = setupSubFrameDataSubAttributeds(i: i, subLength: subLength)
+            guard let str = strAttributed else { break }
+          
+            // get size and framesetter
+            let framesetterAndSizeValue = getStringCTFramesetterAndSize(attributed: str)
+            let ctFramesetter = framesetterAndSizeValue.0
+            let size = framesetterAndSizeValue.1
+            let currentRect = CGRect.init(x: leftX, y: currentmaxY, width: size.width, height: size.height)
+            subFrameData_private.frameArray.append(currentRect)
+            currentmaxY = currentRect.maxY
+            
+            // get path
+            let path = createCtFramePath(y: currentRect.minY, size: size)
+            subFrameData_private.subFramePaths.append(path)
+            
+            // get ctFrame
+            let frame = setupCtFrame(ctFramesetter: ctFramesetter, path: path)
+            subFrameData_private.subCtFrames.append(frame)
+        }
+    }
+    
+    private func setupSubFrameDataSubAttributeds(i: Int, subLength: Int) -> NSAttributedString? {
+        let attributedStrLength = attributedString?.length ?? 0
+        let lastLength = i * subLength
+        if lastLength >= attributedStrLength { return nil }
+        var currenLength = subLength
+        if attributedStrLength < subLength + lastLength {
+            currenLength = attributedStrLength - lastLength
+        }
         
-        let ctFramesetter = CTFramesetterCreateWithAttributedString(attributedString)
+        let subAttributedString = attributedString?.attributedSubstring(from: NSRange.init(location: lastLength, length: currenLength))
+        if let subAttributedString = subAttributedString {
+            subFrameData_private.subAttributeStrings.append(subAttributedString)
+        }
+        return subAttributedString
+    }
+   
+    private func getStringCTFramesetterAndSize(attributed: NSAttributedString) -> (CTFramesetter, CGSize) {
+        let ctFramesetter = CTFramesetterCreateWithAttributedString(attributed)
         let range = CFRange.init(location: 0,length: 0)
-        
-        width_private = textView.frame.width// ?? 0
+
         let standardSize = CGSize.init(width: width_private,
                                        height: CGFloat.greatestFiniteMagnitude)
-        
-        let size =  CTFramesetterSuggestFrameSizeWithConstraints(ctFramesetter,range,nil,standardSize,nil)
-        
-        let path = createNewPath(size: size)
-  
+
+        let size =  CTFramesetterSuggestFrameSizeWithConstraints(ctFramesetter,
+                                                                 range,
+                                                                 nil,
+                                                                 standardSize,
+                                                                 nil)
+        return (ctFramesetter,size)
+    }
+   
+    private func setupCtFrame(ctFramesetter: CTFramesetter,path: CGPath) -> CTFrame {
         let cfRange = CFRange.init(location: 0, length: 0)
         let ctFrame = CTFramesetterCreateFrame(ctFramesetter,
                                                cfRange,
                                                path,
                                                nil)
-        
-        ctFrame_private = ctFrame
         return ctFrame
     }
     
@@ -170,7 +231,34 @@ class PYFrameHander: NSObject {
     ///
     /// - Returns: CGMutablePath
     @discardableResult
-    private func createNewPath(size: CGSize) -> CGMutablePath {
+    private func createCtFramePath(y: CGFloat,size: CGSize) -> CGMutablePath {
+        
+//        let subFrameH = size.height
+//        let layoutTop = y
+//        let topY_path = subFrameH - layoutTop
+//        let layoutBottom = layout?.insets.bottom ?? 0
+//
+//        var bottomMargin = layoutTop + layoutBottom - subFrameH
+//        bottomMargin = bottomMargin <= 0 ? 0 : bottomMargin
+//
+//        let bottomY_path = layoutBottom//textViewH - maxHeight_private - layoutTop + bottomMargin
+        let textViewH = textView?.bounds.height ?? 0
+        let top = textViewH - y
+        let bottom = textViewH - (y + size.height)
+        
+        let path = CGMutablePath.init()
+        path.move(to: CGPoint.init(x: leftX, y: bottom))
+        path.addLine(to: CGPoint.init(x: rightX, y: bottom))
+        path.addLine(to: CGPoint.init(x: rightX, y: top))
+        path.addLine(to: CGPoint.init(x: leftX, y: top))
+        path.closeSubpath()
+        return path
+    }
+    /// 创建 CGMutablePath 并更新self.cgPath
+    ///
+    /// - Returns: CGMutablePath
+    @discardableResult
+    private func createSuperFramePath(size: CGSize) -> CGMutablePath {
         
         setProperty(size: size)
         
@@ -246,6 +334,79 @@ extension PYFrameHander {
             self.maxStringLenth = maxStringLenth
             self.minHeight = minHeight ?? -2
             self.minWidth = minWidth ?? -2
+        }
+    }
+    
+    struct SubFrameData {
+        var currentIndex: NSInteger = 0
+        var subFramePaths: [CGPath] = [CGPath]()
+        var subCtFrames: [CTFrame] = [CTFrame]()
+        var subAttributeStrings: [NSAttributedString] = [NSAttributedString]()
+        var frameArray: [CGRect] = [CGRect]()
+        
+        init() { }
+        
+        func getPath(index: Int) -> CGPath? {
+            guard subFramePaths.count > index else {
+                return nil
+            }
+            return subFramePaths[index]
+        }
+        
+        func getCtFrame(index: Int) -> CTFrame? {
+            guard subCtFrames.count > index else {
+                return nil
+            }
+            return subCtFrames[index]
+        }
+        
+        func getAttributedStr(index: Int) -> NSAttributedString? {
+            guard subAttributeStrings.count > index else {
+                return nil
+            }
+            return subAttributeStrings[index]
+        }
+        
+        func getFrameArray(index: Int) -> CGRect? {
+            guard frameArray.count > index else {
+                return nil
+            }
+            return frameArray[index]
+        }
+        
+        func getValue(index: Int) -> (path: CGPath?,
+            ctFrame: CTFrame?,
+            subAttributedStr: NSAttributedString?,
+            frame: CGRect?) {
+             return (getPath(index: index),
+                     getCtFrame(index: index),
+                     getAttributedStr(index: index),
+                     getFrameArray(index: index)
+                )
+        }
+        
+        /// 遍历获取元素
+        ///
+        /// - Parameter block: 每次遍历后的值 if isStop = true { break }
+        func enumeratePropertyUsingBlock(block:
+            ((_ isStop:inout Bool,
+            _ index:NSInteger?,
+            _ path:CGPath?,
+            _ ctFrame: CTFrame?,
+            _ attributeStr: NSAttributedString?,
+            _ frame: CGRect?)->())) {
+            let count = subFramePaths.count
+            var isStop = false
+            for i in 0 ..< count {
+                let value = getValue(index: i)
+                block(&isStop,
+                      i,
+                      value.path,
+                      value.ctFrame,
+                      value.subAttributedStr,
+                      value.frame)
+                if isStop { break }
+            }
         }
     }
 }
