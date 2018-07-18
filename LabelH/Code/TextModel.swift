@@ -8,7 +8,7 @@ import UIKit
 class TextModel: NSObject {
     var str: String {
         var str = ""
-        for i in 0 ..< 80 {
+        for i in 0 ..< 8 {
             str += "\(i + 1)哈,"
         }
         return str

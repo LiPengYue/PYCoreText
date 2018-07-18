@@ -85,17 +85,17 @@ class PYTextView: UIView {
 //        textFrame.drawData(context: context)
         /// 绘制文字
         CTFrameDraw(ctFrame, context)
-        let linePointers = CTFrameGetLines(ctFrame)
-        let count = CFArrayGetCount(linePointers)
-
-        
-        for i in 0 ..< 1 {
-            let linePoint = CFArrayGetValueAtIndex(linePointers, i)
-            let line = unsafeBitCast(linePoint, to: CTLine.self)
-            CTLineDraw(line, context)
-        }
+//        let linePointers = CTFrameGetLines(ctFrame)
+//        let count = CFArrayGetCount(linePointers)
+//
+//
+//        for i in 0 ..< 1 {
+//            let linePoint = CFArrayGetValueAtIndex(linePointers, i)
+//            let line = unsafeBitCast(linePoint, to: CTLine.self)
+//            CTLineDraw(line, context)
+//        }
         /// 绘图
-        drawImageIfHaveImage(ctFrame: ctFrame, context: context)
+//        drawImageIfHaveImage(ctFrame: ctFrame, context: context)
     }
     // MARK:life cycles
     
@@ -111,11 +111,7 @@ private extension PYTextView {
         context.translateBy(x: 0, y: bounds.size.height)
         context.scaleBy(x: 1, y: -1)
     }
-    
-    /// 绘图如果有图片的话
-    func drawImageIfHaveImage(ctFrame: CTFrame, context: CGContext) {
-        guard let imageModelArray = imageModelArray else { return }
-        
+    func drawText(ctFrame: CTFrame, context: CGContext,_ loopLinesBlock:((_ line: CTLine, _ linePoint: CGPoint)->())?) {
         /// 获取每一行
         let ctLines = CTFrameGetLines(ctFrame)
         let ctLinesCount = CFArrayGetCount(ctLines)
@@ -136,10 +132,36 @@ private extension PYTextView {
             
             
             // 调整成所需要的坐标
-            context.textPosition =
+            context.textPosition = lineOrigins[index]
+            CTLineDraw(line, context)
+        }
+    }
+    /// 绘图如果有图片的话
+    func drawImageIfHaveImage(ctFrame: CTFrame, context: CGContext) {
+       
+        
+        /// 获取每一行
+        let ctLines = CTFrameGetLines(ctFrame)
+        let ctLinesCount = CFArrayGetCount(ctLines)
+        
+        /// 每行的origin
+        var lineOrigins = Array<CGPoint>.init(repeating: CGPoint.zero, count: ctLinesCount)
+        CTFrameGetLineOrigins(ctFrame, CFRange.init(location: 0, length: 0), &lineOrigins)
+        
+        let path = CTFrameGetPath(ctFrame)
+        let colRect = path.boundingBoxOfPath
+        
+        var imageIdex: NSInteger = 0
+        for index in 0 ..< ctLinesCount {
+            let lineUnsafePoint = CFArrayGetValueAtIndex(ctLines, index)
+            /// line
+            let line = unsafeBitCast(lineUnsafePoint, to: CTLine.self)
+            // 调整成所需要的坐标
+            context.textPosition = lineOrigins[index]
             CTLineDraw(line, context)
             
-            
+            guard let imageModelArray = imageModelArray else { break }
+            if imageModelArray.count <= 0 { break }
             let runs = CTLineGetGlyphRuns(line)
             let runsCount = CFArrayGetCount(runs)
             
@@ -152,16 +174,12 @@ private extension PYTextView {
                 imageIdex += 1
                 let charIndex = CTRunGetStringRange(run)
                 let offsetX = CTLineGetOffsetForStringIndex(line, charIndex.location, nil)
-                
                 let runBounds = getImageRunFrame(run: run, lineOringinPoint: lineOrigins[index], offsetX: offsetX)
                 // 获得ctframe的绘制区域
                 // 计算此绘制区域的范围
                 // 算在此区域中空白字符的位置
                 let delegateBounds = runBounds.offsetBy(dx: colRect.origin.x,
                                                         dy: colRect.origin.y)
-                
-//                let delegateBoundsValue = NSValue.init(cgRect: delegateBounds)
-//                imageModel.setValue(delegateBoundsValue, forKey: "frame_private")
                 imageModel.framePrivate = delegateBounds
                 let imageName = imageModel.url ?? ""
                 let image = UIImage.init(named: imageName)

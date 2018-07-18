@@ -64,14 +64,6 @@ class PYTextScrollView: UIScrollView {
     
     
     // MARK:functions
-    var isFirstLayout = true
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        if isFirstLayout {
-//            coreTextView.addConstraint(heightConstraints)
-        }
-        isFirstLayout = false
-    }
     // MARK: lazy loads
     private var coreTextView: PYTextView = {
         let textView = PYTextView()
